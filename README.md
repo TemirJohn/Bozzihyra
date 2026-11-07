@@ -10,6 +10,7 @@ npm run dev          # http://localhost:5173
 ```
 
 - `http://localhost:5173/?demo=1` — открыть сразу с примером данных (без онбординга)
+- `?jury=1` — открыть режим жюри с метриками гипотезы (или 5 быстрых нажатий на «Bozzihyra 0.3» внизу профиля)
 - Профиль → «Сбросить демо» — начать с онбординга
 - Тестовый OTP-код: `1234`
 
@@ -22,7 +23,7 @@ Netlify: `npx netlify deploy --prod --dir=dist` после `npm run build`.
 
 - `src/lib/mock.js` — котировки, комиссии, партнёры, история цены золота
 - `src/store.jsx` — состояние (балансы, операции, события для метрик), сохраняется в localStorage
-- `src/screens/` — Onboarding, Home, Gold, Trade (OTC), Card, Cashback, Partners, TopUp, Profile
+- `src/screens/` — Onboarding, Home (табы Карта/Золото/Акции/Крипта), Gold (Цена / О токене), Trade (OTC для любого актива), AssetPanel, Card, Cashback, Partners, TopUp, Notifications, History, Portfolio, Profile (настройки), Jury
 
 ## Сценарий для демо
 

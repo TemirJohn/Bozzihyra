@@ -1,12 +1,11 @@
 import { useState } from 'react'
 import { Check } from 'lucide-react'
 import { useStore } from '../store.jsx'
-import { PRICES } from '../lib/mock.js'
 import { kzt, grams, btc } from '../lib/format.js'
 import { Button, Panel, Disclaimer, Choice } from '../components/ui.jsx'
 
 export default function Cashback({ nav }) {
-  const { state, dispatch, goldPrice } = useStore()
+  const { state, dispatch, goldPrice, prices } = useStore()
   const [pick, setPick] = useState(state.cashback)
   const cb = 100 // 1% от 10 000 ₸
 
@@ -19,7 +18,7 @@ export default function Cashback({ nav }) {
     {
       id: 'btc', title: 'Bitcoin',
       text: 'Сильнее колеблется в цене: может как вырасти, так и заметно упасть.',
-      example: `+${btc(cb / PRICES.btc)}`,
+      example: `+${btc(cb / prices.btc)}`,
     },
     {
       id: 'kzt', title: 'Тенге',

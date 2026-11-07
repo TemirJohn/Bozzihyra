@@ -22,3 +22,16 @@ export const time = (ts) =>
 
 export const dateShort = (ts) =>
   new Date(ts).toLocaleDateString('ru-RU', { day: 'numeric', month: 'short' })
+
+// Количество актива в его единицах: граммы для золота, монеты для крипты, штуки для акций
+export const qty = (asset, q) => {
+  if (asset.kind === 'gold') return grams(q)
+  if (asset.kind === 'crypto') return `${q.toLocaleString('ru-RU', { maximumFractionDigits: 6 })} ${asset.symbol}`
+  return `${q.toLocaleString('ru-RU', { maximumFractionDigits: 4 })} шт`
+}
+
+export const qtyExact = (asset, q) => {
+  if (asset.kind === 'gold') return gramsExact(q)
+  if (asset.kind === 'crypto') return `${q.toLocaleString('ru-RU', { minimumFractionDigits: 6, maximumFractionDigits: 6 })} ${asset.symbol}`
+  return `${q.toLocaleString('ru-RU', { minimumFractionDigits: 4, maximumFractionDigits: 4 })} шт ${asset.symbol}`
+}

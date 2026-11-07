@@ -1,13 +1,13 @@
 @import "tailwindcss";
 
-/* Bozzihyra: liquid-glass panels drifting over a still wallpaper of gold, sage and clay light.
+/* Bozzihyra: solid cards on a quiet stone ground; liquid glass only on the floating layer.
    One accent: gold. Display = Unbounded (balances, headings), body = Onest, figures = JetBrains Mono. */
 :root {
   --bg: #e8ebe5;
   --fg: #12161b;
   --mute: #5c635b;
   --line: rgb(18 22 27 / 0.1);
-  --card: rgb(255 255 255 / 0.62);
+  --card: #ffffff;
   --vault: #14181d;
   --gold: #9c721c;
   --gold-fill: #d9aa45;
@@ -16,9 +16,6 @@
   --up: #1b7549;
   --down: #b3362e;
   --warn: #9a610e;
-  --blob-1: #f2c55e;
-  --blob-2: #94c6b0;
-  --blob-3: #f0ad8f;
   --chart-grid: rgb(18 22 27 / 0.1);
   --chart-text: #5c635b;
 
@@ -34,16 +31,13 @@
     --fg: #eff1ec;
     --mute: #9aa198;
     --line: rgb(255 255 255 / 0.1);
-    --card: rgb(30 34 40 / 0.6);
+    --card: #171b21;
     --vault: #1a1f26;
     --gold: #e6bd62;
     --gold-soft: rgb(230 189 98 / 0.16);
     --up: #52c690;
     --down: #ff6d60;
     --warn: #e9a640;
-    --blob-1: #6f4f15;
-    --blob-2: #17443a;
-    --blob-3: #4a2820;
     --chart-grid: rgb(255 255 255 / 0.1);
     --chart-text: #9aa198;
   }
@@ -55,16 +49,13 @@
   --fg: #eff1ec;
   --mute: #9aa198;
   --line: rgb(255 255 255 / 0.1);
-  --card: rgb(30 34 40 / 0.6);
+  --card: #171b21;
   --vault: #1a1f26;
   --gold: #e6bd62;
   --gold-soft: rgb(230 189 98 / 0.16);
   --up: #52c690;
   --down: #ff6d60;
   --warn: #e9a640;
-  --blob-1: #6f4f15;
-  --blob-2: #17443a;
-  --blob-3: #4a2820;
   --chart-grid: rgb(255 255 255 / 0.1);
   --chart-text: #9aa198;
 }
@@ -98,15 +89,8 @@ button { cursor: pointer; }
 button:disabled { cursor: not-allowed; }
 :focus-visible { outline: 2px solid var(--gold-fill); outline-offset: 2px; }
 
-/* Wallpaper behind the glass: static light pools the panels refract as they scroll over */
-.bz-wall {
-  background:
-    radial-gradient(70% 38% at 92% 4%, var(--blob-1), transparent 72%),
-    radial-gradient(60% 34% at -6% 42%, var(--blob-2), transparent 72%),
-    radial-gradient(70% 36% at 104% 88%, var(--blob-3), transparent 72%),
-    radial-gradient(40% 22% at 20% 100%, var(--blob-1), transparent 72%),
-    var(--bg);
-}
+/* Plain ground: glass is reserved for the floating layer (tab bar, buttons, banners) */
+.bz-wall { background: var(--bg); }
 .bz-coin { background: radial-gradient(circle at 35% 30%, #f6dd98, #d0a03c 52%, #6e5016); }
 
 /* glisse overrides. Unlayered, so they sit beside the library's own unlayered rules. */
@@ -115,10 +99,16 @@ button:disabled { cursor: not-allowed; }
 .lg-button[data-variant="filled"]:not([data-destructive]) { color: var(--on-gold); }
 .lg-tab-bar.bz-tabs[data-icons] { --lg-tab-width: 66px; --lg-tab-height: 54px; }
 .lg-segmented.bz-seg { --lg-tab-width: 74px; }
-.lg-glass.bz-glass-strong { --lg-blur: 14px; }
+/* Ширина сегментов от ширины экрана (телефонная рамка 390px, поля по 16px) */
+.lg-segmented.bz-seg-full { --lg-tab-width: calc((min(100vw, 390px) - 32px) / 4); }
+.lg-segmented.bz-seg-half { --lg-tab-width: calc((min(100vw, 390px) - 32px) / 2); }
+.lg-segmented.bz-seg-5 { --lg-tab-width: calc((min(100vw, 390px) - 32px) / 5); font-size: 13px; }
+.lg-segmented.bz-seg-3 { --lg-tab-width: calc((min(100vw, 390px) - 32px - 32px - 48px) / 3); font-size: 13px; }
+.lg-slider { max-width: none; width: 100%; }
+.lg-glass.bz-glass-strong { --lg-blur: 18px; --lg-glass: color-mix(in srgb, var(--card) 72%, transparent); }
 
 @layer components {
-  .bz-card { border-radius: 26px; padding: 16px; --lg-blur: 10px; }
+  .bz-card { border-radius: 24px; padding: 16px; background: var(--card); border: 1px solid var(--line); }
 }
 
 @keyframes rise { from { transform: translateY(12px); opacity: 0; } to { transform: none; opacity: 1; } }

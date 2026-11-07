@@ -1,4 +1,4 @@
-import { Button as GButton, Glass } from 'glisse'
+import { Button as GButton } from 'glisse'
 import { ChevronLeft, X } from 'lucide-react'
 
 // Основная кнопка: filled = золотая, ghost = стекло, danger = стекло с красным текстом
@@ -20,11 +20,10 @@ export function Wallpaper() {
   return <div aria-hidden="true" className="bz-wall absolute inset-0 -z-10 pointer-events-none" />
 }
 
-// Полноэкранная панель поверх приложения, со своим фоном под стеклом
+// Полноэкранная панель поверх приложения
 export function Panel({ title, onClose, onBack, children, footer }) {
   return (
-    <div className="absolute inset-0 z-30 flex flex-col anim-slide isolate">
-      <Wallpaper />
+    <div className="absolute inset-0 z-30 flex flex-col anim-slide bg-paper">
       <header className="flex items-center gap-2 px-4 pt-[max(14px,env(safe-area-inset-top))] pb-3">
         {onBack ? <IconBtn onClick={onBack} label="Назад"><ChevronLeft /></IconBtn> : <span className="w-10" />}
         <h2 className="flex-1 text-center font-semibold text-[16px]">{title}</h2>
@@ -49,17 +48,17 @@ export function Row({ label, value, strong, muted, hint }) {
 }
 
 export function Card({ className = '', children, ...props }) {
-  return <Glass className={`bz-card ${className}`} {...props}>{children}</Glass>
+  return <div className={`bz-card ${className}`} {...props}>{children}</div>
 }
 
 // Стеклянная кнопка-карточка для выбора варианта
 export function Choice({ selected, onClick, children, className = '' }) {
   return (
-    <Glass role="button" tabIndex={0} aria-pressed={selected} onClick={onClick}
+    <div role="button" tabIndex={0} aria-pressed={selected} onClick={onClick}
       onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onClick() } }}
       className={`bz-card text-left cursor-pointer transition outline-offset-2 ${selected ? 'ring-2 ring-gold-fill' : ''} ${className}`}>
       {children}
-    </Glass>
+    </div>
   )
 }
 
@@ -73,7 +72,7 @@ export function Label({ children, className = '' }) {
 
 export function Notice({ tone = 'info', icon, title, children, action }) {
   const tones = {
-    info: 'bg-card text-ink backdrop-blur-md',
+    info: 'bg-card text-ink border border-line',
     warn: 'bg-warn/12 text-warn',
     error: 'bg-down/12 text-down',
     ok: 'bg-up/12 text-up',
@@ -92,4 +91,20 @@ export function Notice({ tone = 'info', icon, title, children, action }) {
 
 export function Disclaimer({ children }) {
   return <p className="text-[11px] leading-snug text-mute mt-4">{children}</p>
+}
+
+export function Section({ title, children, action }) {
+  return (
+    <section className="flex flex-col gap-2">
+      <div className="flex items-center justify-between px-1">
+        <h3 className="font-semibold text-[16px]">{title}</h3>
+        {action}
+      </div>
+      {children}
+    </section>
+  )
+}
+
+export function Empty({ children }) {
+  return <div className="bz-card text-center text-[14px] text-mute py-8">{children}</div>
 }

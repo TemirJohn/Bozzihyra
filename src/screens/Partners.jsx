@@ -21,7 +21,7 @@ export default function Partners() {
     <div className="px-4 pt-[max(16px,env(safe-area-inset-top))] pb-6 flex flex-col gap-4">
       <header className="px-1">
         <h1 className="font-semibold text-[18px]">Биржи-партнёры</h1>
-        <p className="text-[13px] text-mute mt-1">Только площадки из реестра МФЦА. Балансы видны здесь, а активы хранятся у партнёра.</p>
+        <p className="text-[13px] text-mute mt-1">Только площадки из реестра МФЦА. Балансы видны здесь и на главной во вкладке «Крипта», а активы хранятся у партнёра.</p>
       </header>
 
       {connected.length > 0 && (
@@ -96,7 +96,7 @@ function ConnectFlow({ partner, onClose }) {
     setStep('loading')
     setTimeout(() => {
       if (partner.allowed) { dispatch({ type: 'connectPartner', id: partner.id }); setStep('done') }
-      else { dispatch({ type: 'track', name: 'error_partner_not_allowed' }); setStep('denied') }
+      else { dispatch({ type: 'partnerDenied', name: partner.name }); setStep('denied') }
     }, 1400)
   }
 
