@@ -1,6 +1,6 @@
 import { useRef, useState } from 'react'
 import { Switch, SegmentedControl } from 'glisse'
-import { PieChart, History, ChevronRight, Snowflake, Globe, Bell, Palette, Gauge, Sparkles, Repeat, LineChart, ShieldAlert, Link2, Timer, RotateCcw, ShieldCheck, FileText, Landmark, Coins, CreditCard } from 'lucide-react'
+import { PieChart, History, ChevronRight, Snowflake, Globe, Bell, Palette, Gauge, Sparkles, Repeat, LineChart, ShieldAlert, Link2, Timer, RotateCcw, ShieldCheck, FileText, Landmark, Coins, CreditCard, Bot } from 'lucide-react'
 import { useStore } from '../store.jsx'
 import { GOALS, PARTNERS, CURRENCIES } from '../lib/mock.js'
 import { kzt } from '../lib/format.js'
@@ -83,6 +83,7 @@ export default function Profile({ nav }) {
 
       <Section title="Приложение">
         <Card className="py-0">
+          <Item icon={Bot} title="Помощник" sub="Объясняет комиссии, отказы, кешбэк и расходы" onClick={() => nav.open('assistant')} />
           <Item icon={ShieldCheck} title="Безопасность" sub={`${s.biometrics ? 'Face ID' : 'Код'} · устройства · история входов`} onClick={() => nav.open('security')} />
           <Item icon={Bell} title="Push-уведомления" sub="Баннеры об оплатах, кешбэке и операциях"
             right={<Switch aria-label="Push-уведомления" checked={s.push} onCheckedChange={set('push')} />} />

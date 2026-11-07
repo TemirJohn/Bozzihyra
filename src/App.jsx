@@ -17,6 +17,7 @@ import History from './screens/History.jsx'
 import Portfolio from './screens/Portfolio.jsx'
 import Jury from './screens/Jury.jsx'
 import Receipt from './screens/Receipt.jsx'
+import Assistant from './screens/Assistant.jsx'
 import { CardPage, FreezePage, OnlinePage, LimitsPage } from './screens/CardControls.jsx'
 import { SecurityPage, DocumentsPage, TaxesPage } from './screens/ProfilePages.jsx'
 import { LockScreen } from './components/Security.jsx'
@@ -34,7 +35,7 @@ const MODALS = {
   trade: Trade, topup: TopUp, cashback: Cashback, asset: AssetPanel, notifications: Notifications,
   history: History, portfolio: Portfolio, jury: Jury, receipt: Receipt,
   cardPage: CardPage, freeze: FreezePage, online: OnlinePage, limits: LimitsPage,
-  security: SecurityPage, documents: DocumentsPage, taxes: TaxesPage,
+  security: SecurityPage, documents: DocumentsPage, taxes: TaxesPage, assistant: Assistant,
 }
 
 const urlFlag = (name) => {

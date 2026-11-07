@@ -25,6 +25,7 @@ export default function Jury({ nav }) {
     ['Выбор кешбэка', cashback],
     ['Котировка истекла', e.quote_expired || 0],
     ['Ошибки', errors],
+    ['Вопросы помощнику', e.assistant_question || 0],
     ['Сегмент', goal?.segment || '—'],
   ]
   return (

@@ -143,6 +143,7 @@ export default function CardScreen({ nav }) {
                   {result.reason}
                 </Notice>
                 {result.actions.map((a) => ACTIONS[a])}
+                <Button variant="ghost" onClick={() => { setResult(null); nav.open('assistant', { ask: 'Почему отклонили оплату?' }) }}>Спросить помощника</Button>
               </div>
             )}
           </div>

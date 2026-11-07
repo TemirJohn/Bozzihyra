@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { Button as GButton, SegmentedControl } from 'glisse'
 import { CardFace } from './CardControls.jsx'
-import { Plus, CreditCard, Link2, Bell, ChevronRight, Sparkles, ArrowDownToLine, ArrowUpFromLine, LineChart, ShieldCheck, Eye, EyeOff, Snowflake } from 'lucide-react'
+import { Plus, CreditCard, Link2, Bell, ChevronRight, Sparkles, ArrowDownToLine, ArrowUpFromLine, LineChart, ShieldCheck, Eye, EyeOff, Snowflake, Bot } from 'lucide-react'
 import { useStore } from '../store.jsx'
 import { ASSETS, STOCKS, CRYPTO, PARTNERS, PRICES, CUSTODY, CURRENCIES, dayChange } from '../lib/mock.js'
 import { kzt, grams, qty, pct, usdt } from '../lib/format.js'
@@ -45,6 +45,7 @@ export default function Home({ nav }) {
           <div className="text-[13px] text-mute mt-0.5">Добрый день, {state.user.name}</div>
         </div>
         <span className="flex items-center gap-2">
+          <GButton icon={<Bot />} aria-label="Помощник" onClick={() => nav.open('assistant')} />
           <GButton icon={hidden ? <EyeOff /> : <Eye />} aria-label={hidden ? 'Показать балансы' : 'Скрыть балансы'}
             onClick={() => dispatch({ type: 'setting', key: 'hideBalances', value: !hidden })} />
           <span className="relative">
