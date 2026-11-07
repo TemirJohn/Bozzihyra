@@ -45,7 +45,7 @@ export default function Partners() {
                   <Row label="USDT" value={<>{usdt(b.USDT)}<span className="block text-[12px] text-mute">≈ {kzt(b.USDT * PRICES.usdt)}</span></>} />
                   {b.BTC > 0 && <Row label="BTC" value={<>{btc(b.BTC)}<span className="block text-[12px] text-mute">≈ {kzt(b.BTC * PRICES.btc)}</span></>} />}
                 </div>
-                <Button variant="ghost" className="mt-3" disabled={b.USDT <= 0} onClick={() => setFlow({ kind: 'transfer', partner: p })}>
+                <Button variant="ghost" className="mt-3" data-coach={connected[0].id === p.id ? 'partner-transfer' : undefined} disabled={b.USDT <= 0} onClick={() => setFlow({ kind: 'transfer', partner: p })}>
                   <ArrowRightLeft size={16} /> Перевести USDT на карту
                 </Button>
               </Card>
@@ -68,7 +68,7 @@ export default function Partners() {
                   <div className="text-[12px] text-down flex items-center gap-1"><ShieldAlert size={12} /> Нет в реестре МФЦА</div>
                 )}
               </div>
-              <Button size="sm" variant={p.allowed ? 'primary' : 'ghost'} onClick={() => setFlow({ kind: 'connect', partner: p })}>Подключить</Button>
+              <Button size="sm" data-coach={`partner-connect-${p.id}`} variant={p.allowed ? 'primary' : 'ghost'} onClick={() => setFlow({ kind: 'connect', partner: p })}>Подключить</Button>
             </div>
           ))}
           {available.length === 0 && <div className="py-4 text-center text-[13px] text-mute">Все партнёры подключены</div>}

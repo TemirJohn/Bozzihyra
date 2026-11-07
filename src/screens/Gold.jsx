@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { SegmentedControl } from 'glisse'
 import { ShieldCheck, ChevronRight, TrendingDown, TrendingUp, Info, Receipt } from 'lucide-react'
 import { useStore } from '../store.jsx'
@@ -63,7 +63,7 @@ function PriceView({ nav, onAbout }) {
       <PriceChart data={data} color="#d9aa45" unit="1 г" range={range} onRange={setRange} />
 
       {/* Прозрачность хранения остаётся на виду одной строкой */}
-      <button onClick={onAbout} className="bz-card flex items-center gap-3 text-left py-3">
+      <button onClick={onAbout} data-coach="gold-custody" className="bz-card flex items-center gap-3 text-left py-3">
         <span className="w-9 h-9 rounded-full bg-up/12 text-up grid place-items-center"><ShieldCheck size={18} /></span>
         <span className="flex-1 text-[14px]">Обеспечено 1:1 · аудит {CUSTODY.lastAudit}</span>
         <ChevronRight size={18} className="text-mute" />
@@ -90,7 +90,8 @@ function PriceView({ nav, onAbout }) {
 }
 
 function AboutView() {
-  const { goldPrice } = useStore()
+  const { goldPrice, dispatch } = useStore()
+  useEffect(() => { dispatch({ type: 'track', name: 'viewed_custody' }) }, [dispatch])
   const gold = ASSETS.gold
   return (
     <>

@@ -22,6 +22,8 @@ import { CardPage, FreezePage, OnlinePage, LimitsPage } from './screens/CardCont
 import { SecurityPage, DocumentsPage, TaxesPage } from './screens/ProfilePages.jsx'
 import { LockScreen } from './components/Security.jsx'
 import { q } from './lib/shot.js'
+import Tour from './components/Tour.jsx'
+import { tourFor } from './lib/tours.js'
 import Guest, { SignupPrompt } from './screens/Guest.jsx'
 
 const TABS = [
@@ -58,12 +60,14 @@ export default function App() {
   const [locked, setLocked] = useState(() => state.onboarded && !urlFlag('jury') && q('nolock') !== '1')
   const [banner, setBanner] = useState(null)
   const [signingUp, setSigningUp] = useState(false)
+  const [touring, setTouring] = useState(false)
 
   const nav = {
     tab: (t) => { setModal(null); setTab(t) },
     open: (type, props = {}) => setModal({ type, ...props }),
     close: () => setModal(null),
     lock: () => setLocked(true),
+    homeTab: (t) => window.dispatchEvent(new CustomEvent('bz-home-tab', { detail: t })),
     signup: () => { setModal(null); setSigningUp(true); dispatch({ type: 'track', name: 'guest_signup_start' }) },
   }
 
@@ -75,6 +79,13 @@ export default function App() {
     lastId.current = top.id
     if (state.settings.push && modal?.type !== 'notifications') setBanner(top)
   }, [state.notifications, state.settings.push, modal])
+
+  // Гид показываем один раз: после первого входа, на главной, когда ничего не открыто поверх
+  useEffect(() => {
+    if (!state.onboarded || state.tourSeen || locked || touring || modal || tab !== 'home') return
+    const id = setTimeout(() => { setBanner(null); setTouring(true) }, 700)
+    return () => clearTimeout(id)
+  }, [state.onboarded, state.tourSeen, locked, touring, modal, tab])
 
   // Таймер скрытия привязан к самому баннеру: каждый новый баннер живёт 4 секунды
   useEffect(() => {
@@ -137,6 +148,10 @@ export default function App() {
           </div>
         )}
 
+        {touring && !locked && state.onboarded && (
+          <Tour steps={tourFor(state.goal)} nav={nav}
+            onFinish={(skipped) => { setTouring(false); dispatch({ type: 'tourDone', skipped }) }} />
+        )}
         {locked && state.onboarded && <LockScreen onUnlock={() => setLocked(false)} />}
       </div>
     </div>

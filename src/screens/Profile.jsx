@@ -1,8 +1,8 @@
 import { useRef, useState } from 'react'
 import { Switch, SegmentedControl } from 'glisse'
-import { PieChart, History, ChevronRight, Snowflake, Globe, Bell, Palette, Gauge, Sparkles, Repeat, LineChart, ShieldAlert, Link2, Timer, RotateCcw, ShieldCheck, FileText, Landmark, Coins, CreditCard, Bot } from 'lucide-react'
+import { PieChart, History, ChevronRight, Snowflake, Globe, Bell, Palette, Gauge, Sparkles, Repeat, LineChart, ShieldAlert, Link2, Timer, RotateCcw, ShieldCheck, FileText, Landmark, Coins, CreditCard, Bot, Compass } from 'lucide-react'
 import { useStore } from '../store.jsx'
-import { GOALS, PARTNERS, CURRENCIES } from '../lib/mock.js'
+import { PARTNERS, CURRENCIES } from '../lib/mock.js'
 import { kzt } from '../lib/format.js'
 import { Card, Button, Section } from '../components/ui.jsx'
 
@@ -37,7 +37,6 @@ export default function Profile({ nav }) {
   const set = (key) => (value) => dispatch({ type: 'setting', key, value })
   const [confirmReset, setConfirmReset] = useState(false)
   const taps = useRef({ n: 0, t: 0 })
-  const goal = GOALS.find((g) => g.id === state.goal)
   const connected = PARTNERS.filter((p) => state.partners[p.id]).length
 
   // 5 быстрых нажатий на версию открывают режим жюри
@@ -54,7 +53,6 @@ export default function Profile({ nav }) {
         <div className="flex-1 min-w-0">
           <div className="font-semibold text-[18px]">{state.user.name}</div>
           <div className="text-[13px] text-mute num">{state.user.phone}</div>
-          {goal && <div className="text-[12px] text-mute mt-0.5">Цель: {goal.title}</div>}
         </div>
       </header>
 
@@ -83,6 +81,7 @@ export default function Profile({ nav }) {
 
       <Section title="Приложение">
         <Card className="py-0">
+          <Item icon={Compass} title="Пройти гид заново" sub="Короткий тур по главному экрану" onClick={() => { dispatch({ type: 'tourReset' }); nav.tab('home') }} />
           <Item icon={Bot} title="Помощник" sub="Объясняет комиссии, отказы, кешбэк и расходы" onClick={() => nav.open('assistant')} />
           <Item icon={ShieldCheck} title="Безопасность" sub={`${s.biometrics ? 'Face ID' : 'Код'} · устройства · история входов`} onClick={() => nav.open('security')} />
           <Item icon={Bell} title="Push-уведомления" sub="Баннеры об оплатах, кешбэке и операциях"

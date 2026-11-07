@@ -32,7 +32,7 @@ export default function TopUp({ nav }) {
 
   return (
     <Panel title="Пополнить баланс" onClose={nav.close}
-      footer={<Button disabled={!value || tooBig} onClick={() => { dispatch({ type: 'topup', amount: value }); setDone(true) }}>
+      footer={<Button data-coach="topup-submit" disabled={!value || tooBig} onClick={() => { dispatch({ type: 'topup', amount: value }); setDone(true) }}>
         Пополнить на {kzt(value)}
       </Button>}>
       <div className="text-center pt-6">

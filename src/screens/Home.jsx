@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Button as GButton, SegmentedControl } from 'glisse'
 import { CardFace } from './CardControls.jsx'
 import { Plus, CreditCard, Link2, Bell, ChevronRight, Sparkles, ArrowDownToLine, ArrowUpFromLine, LineChart, ShieldCheck, Eye, EyeOff, Snowflake, Bot } from 'lucide-react'
@@ -31,6 +31,12 @@ export default function Home({ nav }) {
   const { state, dispatch, totals, unread, money } = useStore()
   const hidden = state.settings.hideBalances
   const [tab, setTab] = useState(q('ht') || START_TAB[state.goal] || 'card')
+  // Гид переключает вкладку балансов через событие
+  useEffect(() => {
+    const on = (e) => setTab(e.detail)
+    addEventListener('bz-home-tab', on)
+    return () => removeEventListener('bz-home-tab', on)
+  }, [])
 
   const parts = [
     { id: 'card', value: totals.kzt, color: 'var(--fg)' },
@@ -47,7 +53,7 @@ export default function Home({ nav }) {
           <div className="text-[13px] text-mute mt-0.5">Добрый день, {state.user.name}</div>
         </div>
         <span className="flex items-center gap-2">
-          <GButton icon={<Bot />} aria-label="Помощник" onClick={() => nav.open('assistant')} />
+          <span data-coach="home-assistant" className="inline-flex rounded-full"><GButton icon={<Bot />} aria-label="Помощник" onClick={() => nav.open('assistant')} /></span>
           <GButton icon={hidden ? <EyeOff /> : <Eye />} aria-label={hidden ? 'Показать балансы' : 'Скрыть балансы'}
             onClick={() => dispatch({ type: 'setting', key: 'hideBalances', value: !hidden })} />
           <span className="relative">
@@ -65,10 +71,10 @@ export default function Home({ nav }) {
       <div className="px-1">
         <div className="flex items-center justify-between gap-2">
           <Label>Всего</Label>
-          <SegmentedControl className="bz-seg-cur" aria-label="Валюта отображения" items={CURRENCIES} value={state.settings.currency}
-            onValueChange={(v) => dispatch({ type: 'setting', key: 'currency', value: v })} />
+          <span data-coach="home-currency" className="inline-flex rounded-full"><SegmentedControl className="bz-seg-cur" aria-label="Валюта отображения" items={CURRENCIES} value={state.settings.currency}
+            onValueChange={(v) => dispatch({ type: 'setting', key: 'currency', value: v })} /></span>
         </div>
-        <button onClick={() => nav.open('portfolio')} className="w-full text-left flex items-center gap-1 mt-0.5" aria-label="Открыть весь портфель">
+        <button data-coach="home-total" onClick={() => nav.open('portfolio')} className="w-full text-left flex items-center gap-1 mt-0.5 rounded-xl" aria-label="Открыть весь портфель">
           <span className="font-display font-semibold text-[30px] leading-tight num">{money(totals.all)}</span>
           <ChevronRight size={20} className="text-mute" />
         </button>
@@ -101,8 +107,8 @@ export default function Home({ nav }) {
 function Actions({ items }) {
   return (
     <div className="grid grid-cols-4 gap-2">
-      {items.map(({ label, icon, onClick, primary, disabled }) => (
-        <div key={label} className="flex flex-col items-center gap-1.5">
+      {items.map(({ label, icon, onClick, primary, disabled, coach }) => (
+        <div key={label} data-coach={coach} className="flex flex-col items-center gap-1.5 rounded-2xl">
           <GButton icon={icon} aria-label={label} onClick={onClick} disabled={disabled} variant={primary ? 'filled' : 'glass'}
             style={{ width: 54, height: 54, borderRadius: 18 }} />
           <span className="text-[12px] text-center leading-tight">{label}</span>
@@ -129,7 +135,7 @@ function CardTab({ nav }) {
   const s = state.settings
   return (
     <>
-      <CardFace onClick={() => nav.open('cardPage')} />
+      <div data-coach="home-card-face" className="rounded-[22px]"><CardFace onClick={() => nav.open('cardPage')} /></div>
       <div className="flex items-center justify-between text-[12px] text-mute px-1 -mt-2">
         <span className="flex items-center gap-1.5">
           {s.frozen ? <><Snowflake size={13} /> Заморожена</> : <><span className="w-1.5 h-1.5 rounded-full bg-up" /> Активна</>}
@@ -137,7 +143,7 @@ function CardTab({ nav }) {
         <span>Нажмите на карту: реквизиты и управление</span>
       </div>
       <Actions items={[
-        { label: 'Пополнить', icon: <Plus />, onClick: () => nav.open('topup'), primary: true },
+        { label: 'Пополнить', icon: <Plus />, onClick: () => nav.open('topup'), primary: true, coach: 'home-topup' },
         { label: 'Оплатить', icon: <CreditCard />, onClick: () => nav.tab('card') },
         { label: 'С биржи', icon: <Link2 />, onClick: () => nav.tab('partners') },
         { label: 'Кешбэк', icon: <Sparkles />, onClick: () => nav.open('cashback') },
@@ -163,7 +169,7 @@ function GoldTab({ nav }) {
   const cbGrams = state.txs.filter((t) => t.kind === 'cashback' && t.grams).reduce((s, t) => s + t.grams, 0)
   return (
     <>
-      <div className="rounded-[24px] bg-vault text-white p-5 relative overflow-hidden isolate">
+      <div data-coach="home-gold-card" className="rounded-[24px] bg-vault text-white p-5 relative overflow-hidden isolate">
         <div className="absolute right-1 top-0 -z-10"><ToonGold model="stack" count={Math.max(2, Math.min(7, 2 + Math.round(Math.min(1, g / nextGram) * 5)))} size={140} sparkle label="Стопка золотых монет растёт вместе с балансом" /></div>
         <div className="absolute inset-0 -z-10 bg-gradient-to-r from-vault via-vault/85 to-transparent" />
         <div className="text-[12px] text-white/65">Баланс золота · bzGOLD</div>
@@ -181,10 +187,10 @@ function GoldTab({ nav }) {
         <div className="mt-3 text-[13px] text-gold-2 flex items-center gap-1.5"><Sparkles size={14} /> Из кешбэка: {grams(cbGrams)}</div>
       </div>
       <Actions items={[
-        { label: 'Купить', icon: <ArrowDownToLine />, onClick: () => nav.open('trade', { asset: 'gold', mode: 'buy' }), primary: true },
+        { label: 'Купить', icon: <ArrowDownToLine />, onClick: () => nav.open('trade', { asset: 'gold', mode: 'buy' }), primary: true, coach: 'home-gold-buy' },
         { label: 'Продать', icon: <ArrowUpFromLine />, onClick: () => nav.open('trade', { asset: 'gold', mode: 'sell' }), disabled: g * PRICES.gold < 500 },
         { label: 'График', icon: <LineChart />, onClick: () => nav.tab('gold') },
-        { label: 'Кешбэк', icon: <Sparkles />, onClick: () => nav.open('cashback') },
+        { label: 'Кешбэк', icon: <Sparkles />, onClick: () => nav.open('cashback'), coach: 'home-gold-cashback' },
       ]} />
       <Ops cat="gold" nav={nav} empty="Покупки золота и кешбэк появятся здесь" />
       <Section title="О золоте">
@@ -219,7 +225,7 @@ function ListTab({ nav, ids, kind }) {
       </Card>
 
       <Section title={isCrypto ? 'Мои монеты' : 'Акции'}>
-        <Card className="py-1">
+        <Card className="py-1" data-coach={isCrypto ? 'home-crypto-list' : 'home-stock-list'}>
           {ids.map((id) => {
             const a = ASSETS[id]
             const held = state.balances[id]
@@ -243,6 +249,7 @@ function ListTab({ nav, ids, kind }) {
       </Section>
 
       {isCrypto && (
+        <div data-coach="home-partners" className="rounded-[24px]">
         <Section title="На биржах-партнёрах" action={
           <button onClick={() => nav.tab('partners')} className="text-[13px] font-semibold underline underline-offset-2">Управлять</button>
         }>
@@ -266,6 +273,7 @@ function ListTab({ nav, ids, kind }) {
             <Empty>Подключите биржу из реестра МФЦА, чтобы видеть её балансы здесь</Empty>
           )}
         </Section>
+        </div>
       )}
 
       <Ops cat={kind} nav={nav} empty={isCrypto ? 'Покупки и переводы крипты появятся здесь' : 'Покупки акций появятся здесь'} />

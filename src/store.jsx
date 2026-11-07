@@ -33,6 +33,7 @@ export const DEFAULT_SETTINGS = {
 const initial = {
   onboarded: false,
   guest: false,
+  tourSeen: false,
   goal: null,
   user: { name: 'Айгерим', phone: '+7 701 555 12 34' },
   balances: { kzt: 0, gold: 0, btc: 0, eth: 0, nvda: 0, aapl: 0, tsla: 0 },
@@ -95,7 +96,7 @@ function load() {
     if (params.get('demo') === '1') {
       params.delete('demo')
       history.replaceState(null, '', location.pathname + (params.toString() ? `?${params}` : ''))
-      return demoState()
+      return { ...demoState(), tourSeen: q('tour') === '0' }
     }
     const raw = localStorage.getItem(KEY)
     if (raw) {
@@ -181,6 +182,10 @@ function reducer(s, a) {
     case 'payDeclined':
       return withNote({ ...s, events: bump(s.events, `error_${a.code}`) },
         note('error', `Оплата отклонена · ${a.merchant}`, a.reason))
+    case 'tourDone':
+      return { ...s, tourSeen: true, events: bump(s.events, a.skipped ? 'tour_skipped' : 'tour_done') }
+    case 'tourReset':
+      return { ...s, tourSeen: false }
     case 'setCashback':
       return { ...s, cashback: a.value, events: bump(s.events, `cashback_${a.value}`) }
     case 'connectPartner': {

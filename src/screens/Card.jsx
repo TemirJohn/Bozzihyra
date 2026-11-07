@@ -109,7 +109,7 @@ export default function CardScreen({ nav }) {
                 <div className="text-[12px] text-mute">{m.cat}</div>
               </div>
               <span className="num text-[14px] mr-1">{kzt(m.amount)}</span>
-              <Button size="sm" onClick={() => pay(m)}>Оплатить</Button>
+              <Button size="sm" data-coach={`merchant-${m.id}`} onClick={() => pay(m)}>Оплатить</Button>
             </div>
           ))}
         </Box>

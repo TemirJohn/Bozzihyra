@@ -285,7 +285,7 @@ export default function Onboarding({ start = 'welcome', onGuest }) {
 
   if (step === 'ready') {
     return Shell({
-      title: 'Почти готово', sub: 'Выберите, с чего начать. Это подстроит главный экран, изменить можно в любой момент.',
+      title: 'Почти готово', sub: 'Что вам ближе? После входа покажем короткий гид именно под вашу цель.',
       onBack: () => setStep(`t${TUTORIAL.length - 1}`),
       footer: <Button disabled={!agree} onClick={() => setStep('phone')}>Создать счёт</Button>,
       children: (

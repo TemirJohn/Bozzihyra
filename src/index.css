@@ -152,8 +152,11 @@ button:disabled { cursor: not-allowed; }
 .bz-merge { transition: transform .8s cubic-bezier(.5,0,.2,1), opacity .8s ease; }
 @keyframes twinkle { 0%,100% { transform: scale(.4) rotate(0); opacity: 0 } 40%,60% { transform: scale(1) rotate(20deg); opacity: 1 } }
 .anim-twinkle { animation: twinkle 2.4s ease-in-out infinite; }
+/* Подсветка кнопки: затемнение вокруг и пульсирующая рамка */
+.bz-spot { box-shadow: 0 0 0 9999px rgba(0,0,0,.55); outline: 3px solid #fff; outline-offset: 0; animation: spot 1.4s ease-in-out infinite; }
+@keyframes spot { 0%,100% { outline-color: rgba(255,255,255,1); outline-offset: 0 } 50% { outline-color: rgba(255,255,255,.35); outline-offset: 5px } }
 @keyframes ticker { from { transform: translateX(0) } to { transform: translateX(-50%) } }
 .anim-ticker { animation: ticker 28s linear infinite; }
 
-@media (prefers-reduced-motion: reduce) { .anim-bob, .bz-particle, .anim-ring, .anim-stagger, .anim-ticker, .anim-twinkle { animation: none; } .bz-merge { transition: none; } }
+@media (prefers-reduced-motion: reduce) { .anim-bob, .bz-particle, .anim-ring, .anim-stagger, .anim-ticker, .anim-twinkle, .bz-spot { animation: none; } .bz-merge { transition: none; } }
 @media (prefers-reduced-motion: reduce) { .anim-rise, .anim-pop, .anim-slide, .anim-shake, .anim-scan { animation: none; } .bz-flip-inner { transition: none; } }

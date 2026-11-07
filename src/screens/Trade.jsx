@@ -89,7 +89,7 @@ export default function Trade({ asset: assetId = 'gold', mode, nav, autoQuote })
     const chips = isBuy ? [5000, 20000, 50000] : [0.25, 0.5, 1].map((k) => +(bal * k).toFixed(asset.kind === 'crypto' ? 6 : 4))
     return (
       <Panel title={title} onClose={nav.close}
-        footer={<Button disabled={!value || !!error} onClick={getQuote}>Получить котировку</Button>}>
+        footer={<Button data-coach="trade-quote" disabled={!value || !!error} onClick={getQuote}>Получить котировку</Button>}>
         <div className="text-center pt-6">
           <label htmlFor="amount" className="text-[13px] text-mute">{isBuy ? 'Сумма в тенге' : `Количество, ${unit}`}</label>
           <input id="amount" value={raw} autoFocus inputMode="decimal"

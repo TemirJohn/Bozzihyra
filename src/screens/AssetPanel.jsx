@@ -38,7 +38,7 @@ export default function AssetPanel({ id, nav }) {
         <Button onClick={() => nav.open('signupPrompt', { what: `купить ${asset.name}` })}>Купить {asset.symbol}</Button>
       ) : (
         <div className="grid grid-cols-2 gap-2">
-          <Button onClick={() => nav.open('trade', { asset: id, mode: 'buy' })}>Купить</Button>
+          <Button data-coach="asset-buy" onClick={() => nav.open('trade', { asset: id, mode: 'buy' })}>Купить</Button>
           <Button variant="ghost" disabled={held * price < 500} onClick={() => nav.open('trade', { asset: id, mode: 'sell' })}>Продать</Button>
         </div>
       )}>
