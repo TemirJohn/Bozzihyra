@@ -21,7 +21,7 @@ export function CardFace({ onClick, compact }) {
       style={{ background: 'linear-gradient(135deg, #2a2a2c 0%, #0a0a0a 65%, #1c1c1e 100%)' }}>
       <div className={`absolute -right-10 top-1/2 -translate-y-[58%] -z-10 ${s.frozen ? 'opacity-25 grayscale' : ''}`}><ToonGold model="coin" live={false} size={170} sparkle={!s.frozen} /></div>
       <div className="flex justify-between items-start">
-        <span className="font-display font-semibold text-[17px]">bozzihyra<span className="text-gold-fill">.</span></span>
+        <span className="font-display font-semibold text-[17px]">bozzhyra<span className="text-gold-fill">.</span></span>
         {s.frozen ? <Snowflake size={20} className="text-sky-200" /> : <Wifi size={20} className="rotate-90 text-white/70" />}
       </div>
       <div>

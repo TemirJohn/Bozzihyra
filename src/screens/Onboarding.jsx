@@ -10,31 +10,31 @@ import GoldBar from '../components/GoldBar.jsx'
 export function Wordmark() {
   return (
     <span className="font-display font-semibold text-[18px] tracking-tight">
-      bozzihyra<span className="text-gold-fill">.</span>
+      bozzhyra<span className="text-gold-fill">.</span>
     </span>
   )
 }
 
-// Плавный счётчик от 0 до target, когда run = true
+// Плавный счётчик от 0 до target, когда run = true.
+// На таймере, а не на requestAnimationFrame: так он доходит до конца и в фоновой вкладке.
 function useCount(target, run, ms = 900) {
   const [v, setV] = useState(0)
   useEffect(() => {
     if (!run) { setV(0); return }
-    let raf, start
-    const tick = (t) => {
-      start ??= t
-      const k = Math.min(1, (t - start) / ms)
+    const t0 = Date.now()
+    const id = setInterval(() => {
+      const k = Math.min(1, (Date.now() - t0) / ms)
       setV(target * (1 - Math.pow(1 - k, 3)))
-      if (k < 1) raf = requestAnimationFrame(tick)
-    }
-    raf = requestAnimationFrame(tick)
-    return () => cancelAnimationFrame(raf)
+      if (k >= 1) clearInterval(id)
+    }, 16)
+    return () => clearInterval(id)
   }, [target, run, ms])
   return v
 }
 
 /* ---------- Шаг 1. Кешбэк в граммах ---------- */
-function StepCashback({ price }) {
+function StepCashback({ price: live }) {
+  const [price] = useState(live) // цена на момент оплаты, чтобы счётчик не перезапускался с каждой котировкой
   const [paid, setPaid] = useState(false)
   const g = (1500 * FEES.cashbackRate) / price
   const mg = useCount(g * 1000, paid, 1100)
@@ -314,7 +314,7 @@ export default function Onboarding({ start = 'welcome', onGuest }) {
 
   if (step === 'phone') {
     return Shell({
-      title: loginOnly.current ? 'Вход в Bozzihyra' : 'Вход по номеру', sub: 'Тестовый режим: реальные данные не нужны.',
+      title: loginOnly.current ? 'Вход в Bozzhyra' : 'Вход по номеру', sub: 'Тестовый режим: реальные данные не нужны.',
       onBack: () => setStep(loginOnly.current ? 'welcome' : 'ready'),
       footer: <Button onClick={() => setStep('otp')}>Получить код</Button>,
       children: (

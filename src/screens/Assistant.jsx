@@ -103,7 +103,7 @@ function answer(raw, ctx) {
 
   if (has(q, 'баланс', 'сколько у меня', 'портфел', 'всего')) {
     return {
-      text: `Всего у вас ${kzt(totals.all)}. Из них ${kzt(totals.partners)} хранится на биржах-партнёрах, остальное в Bozzihyra.`,
+      text: `Всего у вас ${kzt(totals.all)}. Из них ${kzt(totals.partners)} хранится на биржах-партнёрах, остальное в Bozzhyra.`,
       rows: [['Карта', kzt(totals.kzt)], ['Золото', kzt(totals.gold)], ['Акции', kzt(totals.stocks)], ['Крипта', kzt(totals.crypto)], ['На биржах', kzt(totals.partners)]],
       actions: [{ label: 'Весь портфель', go: ['portfolio'] }],
     }

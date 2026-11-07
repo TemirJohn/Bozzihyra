@@ -1,8 +1,9 @@
 import { createContext, useContext, useEffect, useReducer, useState } from 'react'
 import { ASSETS, FEES, PARTNERS, PRICES, CRYPTO, STOCKS, RATES, DEVICES, dayChange } from './lib/mock.js'
 import { kzt, qty, qtyExact, pct } from './lib/format.js'
+import { q } from './lib/shot.js'
 
-const KEY = 'bozzihyra-demo-v2'
+const KEY = 'bozzhyra-demo-v2'
 
 export const DEFAULT_SETTINGS = {
   // Банк
@@ -89,6 +90,8 @@ function demoState() {
 function load() {
   try {
     const params = new URLSearchParams(location.search)
+    if (q('fresh') === '1') return initial
+    if (q('guest') === '1') return { ...initial, guest: true }
     if (params.get('demo') === '1') {
       params.delete('demo')
       history.replaceState(null, '', location.pathname + (params.toString() ? `?${params}` : ''))
@@ -122,7 +125,7 @@ function reducer(s, a) {
       return withNote({
         ...s, onboarded: true, guest: false, goal: a.goal, cashback: 'gold',
         events: bump(s.events, 'onboarding_done'),
-      }, note('info', 'Добро пожаловать в Bozzihyra', 'Карта открыта. Кешбэк 1% будет приходить в золоте.'))
+      }, note('info', 'Добро пожаловать в Bozzhyra', 'Карта открыта. Кешбэк 1% будет приходить в золоте.'))
     case 'topup':
       return withNote({
         ...s,

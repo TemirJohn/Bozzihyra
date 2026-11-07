@@ -237,7 +237,7 @@ function docText(id, state, period) {
     return ['Дата;Операция;Сумма, KZT', ...state.txs.filter((t) => t.ts >= from && t.kzt != null)
       .map((t) => `${new Date(t.ts).toLocaleString('ru-RU')};${t.title};${t.kzt.toFixed(2)}`)].join('\n')
   }
-  return `Bozzihyra · тестовый документ «${id}» от ${new Date().toLocaleDateString('ru-RU')}`
+  return `Bozzhyra · тестовый документ «${id}» от ${new Date().toLocaleDateString('ru-RU')}`
 }
 
 export function DocumentsPage({ nav }) {
@@ -327,7 +327,7 @@ export function TaxesPage({ nav }) {
       <Panel title={`Справка для декларации · ${year}`} onBack={() => setView('summary')} onClose={nav.close}
         footer={<Button variant="ghost" onClick={() => download(`nalog-${year}.csv`, csv)}><Download size={16} /> Сохранить CSV</Button>}>
         <div className="flex flex-col gap-3 pt-1">
-          <P>Справка о доходах от реализации активов через Bozzihyra за {year} год. Клиент: {CARD.holder}.</P>
+          <P>Справка о доходах от реализации активов через Bozzhyra за {year} год. Клиент: {CARD.holder}.</P>
           <Card className="py-1">
             {rows.map((r) => (
               <div key={r.id} className="py-2.5 border-b border-line last:border-0">

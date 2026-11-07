@@ -9,6 +9,7 @@ import { Card, Label, Notice, Row, Section, Empty } from '../components/ui.jsx'
 import TxRow from '../components/TxRow.jsx'
 import { AssetIcon } from './AssetPanel.jsx'
 import { Wordmark } from './Onboarding.jsx'
+import { q } from '../lib/shot.js'
 import ToonGold from '../components/ToonGold.jsx'
 
 const TABS = [
@@ -29,7 +30,7 @@ const HINTS = {
 export default function Home({ nav }) {
   const { state, dispatch, totals, unread, money } = useStore()
   const hidden = state.settings.hideBalances
-  const [tab, setTab] = useState(START_TAB[state.goal] || 'card')
+  const [tab, setTab] = useState(q('ht') || START_TAB[state.goal] || 'card')
 
   const parts = [
     { id: 'card', value: totals.kzt, color: 'var(--fg)' },
@@ -212,7 +213,7 @@ function ListTab({ nav, ids, kind }) {
         <Label>{isCrypto ? 'Баланс крипты' : 'Баланс акций'}</Label>
         <div className="font-display font-semibold text-[28px] num mt-1">{money(own + (isCrypto ? totals.partners : 0))}</div>
         {isCrypto && totals.partners > 0 && (
-          <div className="text-[12px] text-mute mt-1 num">В Bozzihyra {money(own)} · на биржах {money(totals.partners)}</div>
+          <div className="text-[12px] text-mute mt-1 num">В Bozzhyra {money(own)} · на биржах {money(totals.partners)}</div>
         )}
         {!isCrypto && <div className="text-[12px] text-mute mt-1">Токенизированные акции, дробные доли от 1 000 ₸</div>}
       </Card>
@@ -273,7 +274,7 @@ function ListTab({ nav, ids, kind }) {
         <Card className="py-1 divide-y divide-line">
           {isCrypto ? (
             <>
-              <Row label="Хранение в Bozzihyra" value="Кастодиальное, без seed-фраз" muted />
+              <Row label="Хранение в Bozzhyra" value="Кастодиальное, без seed-фраз" muted />
               <Row label="На биржах" value="Хранится у партнёра" muted />
               <Row label="Партнёры" value="Только из реестра МФЦА" muted />
               <Row label="Спред" value="1,0% + комиссия 0,2%" muted />

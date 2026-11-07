@@ -1,6 +1,6 @@
 @import "tailwindcss";
 
-/* Bozzihyra: monochrome — black, white and greys; gold appears only on gold itself (coin, chart, grams).
+/* Bozzhyra: monochrome — black, white and greys; gold appears only on gold itself (coin, chart, grams).
    Display = Unbounded (balances, headings), body = Onest, figures = JetBrains Mono. */
 :root {
   --bg: #f2f2f2;

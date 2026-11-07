@@ -21,6 +21,7 @@ import Assistant from './screens/Assistant.jsx'
 import { CardPage, FreezePage, OnlinePage, LimitsPage } from './screens/CardControls.jsx'
 import { SecurityPage, DocumentsPage, TaxesPage } from './screens/ProfilePages.jsx'
 import { LockScreen } from './components/Security.jsx'
+import { q } from './lib/shot.js'
 import Guest, { SignupPrompt } from './screens/Guest.jsx'
 
 const TABS = [
@@ -45,10 +46,16 @@ const urlFlag = (name) => {
 
 export default function App() {
   const { state, dispatch } = useStore()
-  const [tab, setTab] = useState('home')
-  const [modal, setModal] = useState(() => (urlFlag('jury') ? { type: 'jury' } : null))
+  const [tab, setTab] = useState(() => q('tab') || 'home')
+  const [modal, setModal] = useState(() => {
+    if (urlFlag('jury')) return { type: 'jury' }
+    const type = q('open')
+    if (!type) return null
+    const id = q('id') === 'first' ? state.txs[0]?.id : q('id') === 'firstpay' ? state.txs.find((t) => t.kind === 'pay')?.id : q('id')
+    return { type, id, asset: q('asset') || undefined, mode: q('mode') || undefined, filter: q('filter') || undefined, ask: q('ask') || undefined, autoQuote: q('autoQuote') === '1' }
+  })
   // Экран входа при открытии (кроме режима жюри, чтобы сразу показывать метрики)
-  const [locked, setLocked] = useState(() => state.onboarded && !urlFlag('jury'))
+  const [locked, setLocked] = useState(() => state.onboarded && !urlFlag('jury') && q('nolock') !== '1')
   const [banner, setBanner] = useState(null)
   const [signingUp, setSigningUp] = useState(false)
 
@@ -98,7 +105,7 @@ export default function App() {
             {Modal && <Modal key={modalKey} {...modal} nav={nav} />}
           </>
         ) : !state.onboarded ? (
-          <Onboarding start={signingUp ? 't0' : 'welcome'} onGuest={() => setSigningUp(false)} />
+          <Onboarding start={signingUp ? 't0' : (q('ob') || 'welcome')} onGuest={() => setSigningUp(false)} />
         ) : (
           <>
             <main key={tab} className="flex-1 overflow-y-auto no-scrollbar anim-rise pb-28">

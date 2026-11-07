@@ -1,0 +1,467 @@
+<title>Bozzhyra Keynote</title>
+<meta name="description" content="Презентация необанка Bozzhyra для защиты на хакатоне BCC Future Talent">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@600;700&family=Onest:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* Keynote: black stage, white type, Apple grey for secondary text, gold only where the subject is gold.
+   One idea per slide; phones are the only imagery. Fixed 1920×1080 stage scaled to the viewport. */
+:root {
+  color-scheme: dark;
+  --bg: #000;
+  --fg: #f5f5f7;
+  --mute: #86868b;
+  --line: #2c2c2e;
+  --panel: #111113;
+  --gold: #e6bd62;
+  --up: #30d158;
+  --down: #ff453a;
+  --display: -apple-system, "SF Pro Display", BlinkMacSystemFont, "Onest", system-ui, sans-serif;
+  --text: -apple-system, "SF Pro Text", BlinkMacSystemFont, "Onest", system-ui, sans-serif;
+  --brand: "Unbounded", "Onest", sans-serif;
+}
+html, body { height: 100%; margin: 0; background: var(--bg); color: var(--fg); overflow: hidden; }
+body { font-family: var(--text); -webkit-font-smoothing: antialiased; }
+.viewport { position: fixed; inset: 0; display: grid; place-items: center; }
+.stage { width: 1920px; height: 1080px; position: relative; transform-origin: center; flex: none; }
+.slide {
+  position: absolute; inset: 0; padding: 110px 140px; box-sizing: border-box;
+  display: flex; flex-direction: column; justify-content: center; gap: 36px;
+  opacity: 0; visibility: hidden; transform: scale(.985);
+  transition: opacity .55s ease, transform .55s ease, visibility 0s linear .55s;
+}
+.slide.on { opacity: 1; visibility: visible; transform: none; transition: opacity .55s ease, transform .55s ease; }
+@media (prefers-reduced-motion: reduce) { .slide, .slide.on { transition: none; transform: none; } }
+
+.eyebrow { font-size: 26px; font-weight: 600; color: var(--mute); letter-spacing: .01em; }
+.eyebrow.gold { color: var(--gold); }
+h1, h2 { font-family: var(--display); margin: 0; letter-spacing: -0.025em; text-wrap: balance; }
+h1 { font-size: 132px; line-height: 1.02; font-weight: 700; }
+h2 { font-size: 88px; line-height: 1.05; font-weight: 700; }
+.lead { font-size: 38px; line-height: 1.35; color: var(--mute); max-width: 30ch; margin: 0; text-wrap: pretty; }
+.lead b, .lead strong { color: var(--fg); font-weight: 600; }
+.gold { color: var(--gold); }
+.num { font-variant-numeric: tabular-nums; }
+.brand { font-family: var(--brand); font-weight: 600; letter-spacing: -0.03em; }
+.brand i { font-style: normal; color: var(--gold); }
+
+.split { display: grid; grid-template-columns: 1fr auto; gap: 90px; align-items: center; height: 100%; }
+.split > .copy { display: flex; flex-direction: column; gap: 32px; }
+.phones { display: flex; gap: 44px; align-items: flex-end; justify-content: center; }
+.phone { display: flex; flex-direction: column; align-items: center; gap: 22px; margin: 0; }
+.phone img { height: 760px; width: auto; display: block; filter: drop-shadow(0 40px 60px rgba(0,0,0,.6)); }
+.phones.sm .phone img { height: 640px; }
+.phone figcaption { font-size: 24px; color: var(--mute); text-align: center; max-width: 18ch; }
+
+.cols { display: grid; gap: 28px; }
+.cols.c3 { grid-template-columns: repeat(3, 1fr); }
+.cols.c4 { grid-template-columns: repeat(4, 1fr); }
+.cols.c5 { grid-template-columns: repeat(5, 1fr); }
+.tile { background: var(--panel); border-radius: 36px; padding: 44px 40px; display: flex; flex-direction: column; gap: 18px; }
+.tile h3 { font-family: var(--display); font-size: 40px; line-height: 1.12; margin: 0; letter-spacing: -0.015em; }
+.tile p { margin: 0; font-size: 26px; line-height: 1.4; color: var(--mute); }
+.tile .k { font-size: 22px; font-weight: 600; color: var(--mute); text-transform: uppercase; letter-spacing: .08em; }
+.tile .big { font-family: var(--display); font-size: 84px; font-weight: 700; letter-spacing: -0.03em; line-height: 1; }
+.tile.hl { outline: 2px solid var(--fg); outline-offset: -2px; }
+.tag { align-self: flex-start; font-size: 20px; font-weight: 600; padding: 6px 14px; border-radius: 99px; background: var(--fg); color: #000; }
+
+.list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 22px; }
+.list li { font-size: 32px; line-height: 1.3; display: flex; gap: 20px; align-items: baseline; }
+.list li::before { content: ""; flex: none; width: 12px; height: 12px; border-radius: 99px; background: var(--fg); transform: translateY(-4px); }
+.list.check li::before { content: "✓"; width: auto; height: auto; background: none; color: var(--up); font-weight: 700; transform: none; }
+.list li span { color: var(--mute); }
+
+.flow { display: grid; grid-template-columns: repeat(7, 1fr); gap: 16px; }
+.step { display: flex; flex-direction: column; gap: 14px; }
+.step .n { font-family: var(--display); font-size: 26px; font-weight: 700; color: #000; background: var(--fg); width: 52px; height: 52px; border-radius: 99px; display: grid; place-items: center; }
+.step .bar { height: 2px; background: var(--line); margin: -40px 0 0 64px; }
+.step:last-child .bar { visibility: hidden; }
+.step h4 { font-size: 30px; margin: 22px 0 0; font-weight: 600; line-height: 1.2; }
+.step p { font-size: 22px; margin: 0; color: var(--mute); line-height: 1.35; }
+.step .dir { font-size: 18px; font-weight: 600; color: var(--gold); text-transform: uppercase; letter-spacing: .06em; }
+
+table.map { border-collapse: collapse; width: 100%; font-size: 30px; }
+table.map td, table.map th { padding: 22px 0; border-bottom: 1px solid var(--line); text-align: left; vertical-align: top; }
+table.map th { font-size: 22px; color: var(--mute); font-weight: 600; text-transform: uppercase; letter-spacing: .08em; }
+table.map td:first-child { font-weight: 600; width: 34%; }
+table.map td:nth-child(2) { color: var(--mute); }
+table.map td:last-child { width: 80px; text-align: right; color: var(--up); font-weight: 700; }
+
+.formula { display: flex; align-items: center; gap: 24px; font-family: var(--display); font-size: 52px; white-space: nowrap; font-weight: 700; letter-spacing: -0.02em; }
+.formula .arrow { color: var(--mute); font-weight: 400; }
+
+.arch { display: grid; grid-template-columns: repeat(5, 1fr); gap: 22px; }
+.arch .col { display: flex; flex-direction: column; gap: 12px; }
+.arch .head { background: var(--fg); color: #000; border-radius: 22px; padding: 22px; font-size: 28px; font-weight: 700; text-align: center; }
+.arch .item { background: var(--panel); border-radius: 18px; padding: 16px 20px; font-size: 22px; color: #d1d1d6; }
+.arch .entry { grid-column: 1 / -1; display: flex; gap: 16px; align-items: center; font-size: 24px; color: var(--mute); margin-bottom: 8px; }
+.arch .entry b { color: var(--fg); background: var(--panel); padding: 12px 22px; border-radius: 16px; font-weight: 600; }
+
+.quote { font-family: var(--display); font-size: 52px; line-height: 1.2; font-weight: 600; letter-spacing: -0.02em; max-width: 26ch; margin: 0; }
+.quote::before { content: "«"; color: var(--mute); }
+.quote::after { content: "»"; color: var(--mute); }
+.note { font-size: 22px; color: var(--mute); }
+
+/* Chrome around the stage */
+.hud { position: fixed; left: 0; right: 0; bottom: max(14px, env(safe-area-inset-bottom, 0px)); display: flex; justify-content: center; gap: 8px; pointer-events: none; }
+.hud i { width: 7px; height: 7px; border-radius: 99px; background: #3a3a3c; transition: background .3s, width .3s; }
+.hud i.on { background: var(--fg); width: 22px; }
+.navbtn { position: fixed; top: 0; bottom: 0; width: 18%; background: none; border: 0; cursor: pointer; }
+.navbtn.prev { left: 0; cursor: w-resize; } .navbtn.next { right: 0; cursor: e-resize; }
+.navbtn:focus-visible { outline: 2px solid var(--fg); outline-offset: -6px; }
+.hint { position: fixed; top: max(14px, env(safe-area-inset-top, 0px)); right: 18px; font-size: 13px; color: #48484a; pointer-events: none; }
+</style>
+
+<div class="viewport"><div class="stage" id="stage">
+
+<!-- 1. Обложка -->
+<section class="slide" data-title="Обложка">
+  <div class="eyebrow">BCC Future Talent · Crypto Neobank Case</div>
+  <h1 class="brand" style="font-size:190px">bozzhyra<i>.</i></h1>
+  <p class="lead" style="font-size:52px;max-width:none">Необанк, где кешбэк копится <span class="gold">в золоте</span>.</p>
+</section>
+
+<!-- 2. Проблема -->
+<section class="slide" data-title="Проблема">
+  <div class="eyebrow">Проблема</div>
+  <h2>Деньги — в банке.<br>Крипта — на бирже.<br>Золото — где-то ещё.</h2>
+  <div class="cols c4" style="margin-top:20px">
+    <div class="tile"><h3>Цена</h3><p>Непонятно, по какой цене на самом деле покупаешь</p></div>
+    <div class="tile"><h3>Комиссии</h3><p>Спред и сборы спрятаны в разных приложениях</p></div>
+    <div class="tile"><h3>Хранение</h3><p>Неясно, где лежит актив и кто за него отвечает</p></div>
+    <div class="tile"><h3>Стоимость</h3><p>Трудно понять, сколько всё стоит сейчас и почему изменилось</p></div>
+  </div>
+</section>
+
+<!-- 3. Для кого -->
+<section class="slide" data-title="Сегменты">
+  <div class="eyebrow">Для кого</div>
+  <h2>Три сегмента. Один фокус.</h2>
+  <div class="cols c3">
+    <div class="tile hl">
+      <span class="tag">Основной</span>
+      <h3>Digital Natives<br><span style="color:var(--mute)">18–24</span></h3>
+      <p><b style="color:var(--fg)">Боль:</b> денег мало, бонусы ничего не стоят, инвестиции пугают.</p>
+      <p><b style="color:var(--fg)">Ответ:</b> золото копится само из покупок. Без вложений.</p>
+    </div>
+    <div class="tile">
+      <h3>Mass Affluent<br><span style="color:var(--mute)">25–35</span></h3>
+      <p><b style="color:var(--fg)">Боль:</b> депозита мало, на брокера нет времени.</p>
+      <p><b style="color:var(--fg)">Ответ:</b> золото и акции в пару касаний, комиссии видны заранее.</p>
+    </div>
+    <div class="tile">
+      <h3>Crypto Curious</h3>
+      <p><b style="color:var(--fg)">Боль:</b> страшно ошибиться, крипту не потратить.</p>
+      <p><b style="color:var(--fg)">Ответ:</b> только биржи из реестра МФЦА, без seed-фраз, оплата картой.</p>
+    </div>
+  </div>
+</section>
+
+<!-- 4. Позиционирование -->
+<section class="slide" data-title="Позиционирование">
+  <div class="eyebrow">Позиционирование</div>
+  <h2>Банк, биржа и кошелёк —<br>в одном приложении.</h2>
+  <p class="lead">А вместо баллов — <b>граммы настоящего золота</b>.</p>
+  <div class="cols c3" style="margin-top:16px">
+    <div class="tile"><div class="k">01</div><h3>Один портфель</h3><p>Карта, золото, акции, крипта и биржи МФЦА на одном экране</p></div>
+    <div class="tile"><div class="k">02</div><h3>Золото вместо баллов</h3><p>1% каждой покупки — в миллиграммах bzGOLD</p></div>
+    <div class="tile"><div class="k">03</div><h3>Всё прозрачно</h3><p>Цена, спред, комиссия и место хранения — до подтверждения</p></div>
+  </div>
+</section>
+
+<!-- 5. Золотой кешбэк -->
+<section class="slide" data-title="Золотой кешбэк">
+  <div class="split">
+    <div class="copy">
+      <div class="eyebrow gold">Киллер-фича</div>
+      <h2>Кешбэк,<br>который весит.</h2>
+      <div class="formula num"><span>10 000 ₸</span><span class="arrow">→</span><span>100 ₸</span><span class="arrow">→</span><span class="gold">1,5 мг</span></div>
+      <p class="lead">1% покупки переводим в золото по цене момента. <b>Граммы остаются вашими</b>, а их стоимость в тенге меняется вместе с золотом — вверх и вниз.</p>
+      <p class="note">1 bzGOLD = 1 г золота 999,9. Обеспечение 1:1 у кастодиана, ежемесячный аудит.</p>
+    </div>
+    <div class="phones">
+      <figure class="phone"><img src="shots/tut-cashback.webp" alt="Обучалка: оплата кофе превращается в +0,22 мг золота"><figcaption>Покупка → миллиграммы</figcaption></figure>
+      <figure class="phone"><img src="shots/home-gold.webp" alt="Баланс золота: стопка монет растёт к первому грамму"><figcaption>Копилка до 1 грамма</figcaption></figure>
+    </div>
+  </div>
+</section>
+
+<!-- 6. Первое знакомство -->
+<section class="slide" data-title="Первое знакомство">
+  <div class="eyebrow">Первое знакомство</div>
+  <h2>Понять за 30 секунд. Посмотреть без регистрации.</h2>
+  <div class="phones sm">
+    <figure class="phone"><img src="shots/welcome.webp" alt="Приветственный экран с 3D-слитком"><figcaption>Живая цена и 3D-слиток</figcaption></figure>
+    <figure class="phone"><img src="shots/tut-price.webp" alt="Обучалка: граммы не меняются, цена меняется"><figcaption>Риск объясняет анимация, а не мелкий шрифт</figcaption></figure>
+    <figure class="phone"><img src="shots/tut-merge.webp" alt="Обучалка: всё в одном балансе"><figcaption>Всё в одном балансе</figcaption></figure>
+    <figure class="phone"><img src="shots/guest.webp" alt="Гостевой режим: рынок и калькулятор кешбэка"><figcaption>Гостевой режим и калькулятор</figcaption></figure>
+  </div>
+</section>
+
+<!-- 7. Архитектура -->
+<section class="slide" data-title="Архитектура">
+  <div class="eyebrow">Архитектура приложения</div>
+  <h2>Пять разделов. Ноль дублирования.</h2>
+  <div class="arch">
+    <div class="entry">Вход: <b>Приветствие</b> → <b>Обучалка</b> → <b>Телефон и код</b> · или <b>Гостевой рынок</b> → <b>Face ID</b></div>
+    <div class="col"><div class="head">Главная</div><div class="item">Всего · ₸ / $ / €</div><div class="item">Карта</div><div class="item">Золото</div><div class="item">Акции</div><div class="item">Крипта + биржи</div><div class="item">Помощник · уведомления</div></div>
+    <div class="col"><div class="head">Золото</div><div class="item">Цена и график</div><div class="item">Купить / продать</div><div class="item">О токене: хранение, аудит</div><div class="item">Как считается кешбэк</div></div>
+    <div class="col"><div class="head">Карта</div><div class="item">Реквизиты по Face ID</div><div class="item">Оплата и кешбэк</div><div class="item">Заморозка</div><div class="item">Онлайн-оплата · лимиты</div></div>
+    <div class="col"><div class="head">Биржи</div><div class="item">Реестр МФЦА</div><div class="item">Балансы партнёров</div><div class="item">USDT → карта</div><div class="item">Автоконвертация</div></div>
+    <div class="col"><div class="head">Профиль</div><div class="item">Портфель · история · чеки</div><div class="item">Безопасность</div><div class="item">Документы · налоги</div><div class="item">Настройки биржи</div></div>
+  </div>
+</section>
+
+<!-- 8. Главная -->
+<section class="slide" data-title="Главная и портфель">
+  <div class="split">
+    <div class="copy">
+      <div class="eyebrow">Главная и портфель</div>
+      <h2>Всё, что у вас есть.<br>На одном экране.</h2>
+      <p class="lead">Сверху — общий итог. Ниже — четыре баланса: <b>карта, золото, акции, крипта</b>. В каждом свои действия, операции и справка.</p>
+      <p class="note">Активы на биржах помечены «хранится у партнёра» — честно, где что лежит.</p>
+    </div>
+    <div class="phones">
+      <figure class="phone"><img src="shots/home-card.webp" alt="Главная: баланс карты"><figcaption>Карта</figcaption></figure>
+      <figure class="phone"><img src="shots/home-crypto.webp" alt="Главная: крипта и биржи-партнёры"><figcaption>Крипта и биржи МФЦА</figcaption></figure>
+    </div>
+  </div>
+</section>
+
+<!-- 9. Пять направлений -->
+<section class="slide" data-title="Пять направлений">
+  <div class="eyebrow">Требование брифа: минимум три направления</div>
+  <h2>Пять из пяти.</h2>
+  <table class="map">
+    <tr><th>Направление</th><th>Где в прототипе</th><th></th></tr>
+    <tr><td>Кастодиальный кошелёк</td><td>Балансы, портфель, история, чеки, хранение без seed-фраз</td><td>✓</td></tr>
+    <tr><td>OTC-операции</td><td>Покупка и продажа золота, акций и крипты по котировке на 30 секунд</td><td>✓</td></tr>
+    <tr><td>Золотой токен</td><td>bzGOLD = 1 г 999,9, график, эквивалент в тенге, аудит</td><td>✓</td></tr>
+    <tr><td>Кешбэк в золоте</td><td>1% каждой покупки картой → миллиграммы, выбор золото или BTC</td><td>✓</td></tr>
+    <tr><td>Партнёры МФЦА</td><td>Binance KZ, Bybit KZ, ATAIX: балансы, перевод на карту, блок вне реестра</td><td>✓</td></tr>
+  </table>
+</section>
+
+<!-- 10. Сквозной сценарий -->
+<section class="slide" data-title="Сквозной сценарий">
+  <div class="eyebrow">Сквозной сценарий · живое демо</div>
+  <h2>Две минуты от установки до первого грамма.</h2>
+  <div class="flow">
+    <div class="step"><div class="n">1</div><div class="bar"></div><div class="dir">Знакомство</div><h4>Обучалка</h4><p>Четыре анимации вместо теста</p></div>
+    <div class="step"><div class="n">2</div><div class="bar"></div><div class="dir">Кошелёк</div><h4>Пополнение</h4><p>50 000 ₸ на тестовый баланс</p></div>
+    <div class="step"><div class="n">3</div><div class="bar"></div><div class="dir">OTC · токен</div><h4>Покупка золота</h4><p>Котировка, спред, комиссия, Face ID</p></div>
+    <div class="step"><div class="n">4</div><div class="bar"></div><div class="dir">Кешбэк</div><h4>Оплата кофе</h4><p>+0,22 мг золота на счёт</p></div>
+    <div class="step"><div class="n">5</div><div class="bar"></div><div class="dir">Ошибка</div><h4>Котировка истекла</h4><p>Деньги не списаны, обновить цену</p></div>
+    <div class="step"><div class="n">6</div><div class="bar"></div><div class="dir">МФЦА</div><h4>Подключение Bybit</h4><p>Балансы видны на главной</p></div>
+    <div class="step"><div class="n">7</div><div class="bar"></div><div class="dir">Метрики</div><h4>Режим жюри</h4><p>Воронка этой сессии</p></div>
+  </div>
+</section>
+
+<!-- 11. Прозрачность -->
+<section class="slide" data-title="Прозрачность">
+  <div class="split">
+    <div class="copy">
+      <div class="eyebrow">Цены и комиссии</div>
+      <h2>Всё видно<br>до подтверждения.</h2>
+      <ul class="list">
+        <li>Цена фиксируется на 30 секунд <span>— таймер на экране</span></li>
+        <li>Спред и комиссия построчно <span>— в тенге, не в процентах «где-то»</span></li>
+        <li>Итог в граммах до нажатия «Купить»</li>
+        <li>Чек на каждую операцию <span>— с ID, MCC и кнопкой «Оспорить»</span></li>
+      </ul>
+    </div>
+    <div class="phones">
+      <figure class="phone"><img src="shots/quote.webp" alt="Котировка с таймером и разбивкой комиссий"><figcaption>Котировка</figcaption></figure>
+      <figure class="phone"><img src="shots/receipt.webp" alt="Чек операции"><figcaption>Чек</figcaption></figure>
+    </div>
+  </div>
+</section>
+
+<!-- 12. Доверие -->
+<section class="slide" data-title="Хранение и доверие">
+  <div class="split">
+    <div class="copy">
+      <div class="eyebrow">Хранение и безопасность</div>
+      <h2>Доверие —<br>это интерфейс.</h2>
+      <ul class="list">
+        <li>Золото 1:1 у кастодиана <span>— аудит и дата проверки на виду</span></li>
+        <li>Face ID на входе, реквизитах и крупных сделках</li>
+        <li>Заморозка с причиной и перевыпуском</li>
+        <li>Лимиты: рост — только с подтверждением</li>
+      </ul>
+    </div>
+    <div class="phones">
+      <figure class="phone"><img src="shots/gold-about.webp" alt="Где хранится золото"><figcaption>О токене</figcaption></figure>
+      <figure class="phone"><img src="shots/card-page.webp" alt="Страница карты с управлением"><figcaption>Карта и управление</figcaption></figure>
+    </div>
+  </div>
+</section>
+
+<!-- 13. Ошибки -->
+<section class="slide" data-title="Ошибки">
+  <div class="split">
+    <div class="copy">
+      <div class="eyebrow">Ошибки и предупреждения</div>
+      <h2>Каждая ошибка<br>подсказывает выход.</h2>
+      <ul class="list">
+        <li>Котировка истекла <span>→ обновить цену</span></li>
+        <li>Недостаточно средств <span>→ пополнить или USDT с биржи</span></li>
+        <li>Биржа вне реестра МФЦА <span>→ подключить разрешённую</span></li>
+        <li>Карта заморожена, лимит, онлайн выключен <span>→ кнопка исправить</span></li>
+        <li>Низкий профиль риска <span>→ предупреждение перед криптой</span></li>
+      </ul>
+    </div>
+    <div class="phones">
+      <figure class="phone"><img src="shots/partners.webp" alt="Биржи-партнёры: CryptoX Global нет в реестре МФЦА"><figcaption>Только реестр МФЦА</figcaption></figure>
+      <figure class="phone"><img src="shots/freeze.webp" alt="Заморозка карты с выбором причины"><figcaption>Заморозка</figcaption></figure>
+    </div>
+  </div>
+</section>
+
+<!-- 14. Помощник -->
+<section class="slide" data-title="Помощник">
+  <div class="split">
+    <div class="copy">
+      <div class="eyebrow">Помощник</div>
+      <h2>Объясняет.<br>Не советует.</h2>
+      <p class="lead">Отвечает по данным клиента: <b>почему отклонили оплату, сколько ушло на комиссии, где хранится золото</b>. И сразу ведёт к экрану, где это исправить.</p>
+      <p class="quote">Я не даю инвестиционных советов и не прогнозирую цены.</p>
+    </div>
+    <div class="phones">
+      <figure class="phone"><img src="shots/assistant.webp" alt="Помощник отказывается давать совет и показывает факты"><figcaption>Вопрос «стоит ли купить золото?»</figcaption></figure>
+    </div>
+  </div>
+</section>
+
+<!-- 15. Честность -->
+<section class="slide" data-title="Без обещаний доходности">
+  <div class="eyebrow">Особые критерии кейса</div>
+  <h2>Без обещаний доходности.</h2>
+  <ul class="list check" style="columns:2;column-gap:80px;display:block">
+    <li style="break-inside:avoid;margin-bottom:26px">Нигде нет «выгодно» и «растёт»</li>
+    <li style="break-inside:avoid;margin-bottom:26px">Графики показывают и падения</li>
+    <li style="break-inside:avoid;margin-bottom:26px">«Не депозит» — переключатель при открытии и перед покупкой</li>
+    <li style="break-inside:avoid;margin-bottom:26px">Цена в обучалке ходит в обе стороны</li>
+    <li style="break-inside:avoid;margin-bottom:26px">Уведомления о цене — без рекомендаций</li>
+    <li style="break-inside:avoid;margin-bottom:26px">Помощник отказывается от советов</li>
+    <li style="break-inside:avoid;margin-bottom:26px">Все данные и котировки — тестовые</li>
+    <li style="break-inside:avoid;margin-bottom:26px">Регуляторная модель — гипотеза</li>
+  </ul>
+</section>
+
+<!-- 16. Бизнес-модель -->
+<section class="slide" data-title="Бизнес-модель">
+  <div class="eyebrow">Бизнес-ценность</div>
+  <h2>Кешбэк платит interchange.<br>Банк зарабатывает на движении золота.</h2>
+  <div class="cols c4">
+    <div class="tile"><div class="k">Interchange</div><div class="big num">0,5%</div><p>маржа после кешбэка 1% <span class="note">(допущение: interchange 1,5%)</span></p></div>
+    <div class="tile"><div class="k">OTC</div><div class="big num">0,7%</div><p>спред 0,5% + комиссия 0,2% с каждой сделки золотом</p></div>
+    <div class="tile"><div class="k">AUM</div><div class="big num">↑</div><p>кешбэк остаётся в банке в виде золота, а не уходит в баллы</p></div>
+    <div class="tile"><div class="k">Партнёры</div><div class="big num">0,3%</div><p>за перевод USDT с бирж МФЦА на карту</p></div>
+  </div>
+  <p class="note">Пример: клиент тратит 200 000 ₸ в месяц картой и покупает золото на 20 000 ₸ → ≈ 1 000 ₸ маржи с карты + 140 ₸ с OTC. Ставки — допущения для проверки в пилоте.</p>
+</section>
+
+<!-- 17. Метрики -->
+<section class="slide" data-title="Метрики">
+  <div class="split">
+    <div class="copy">
+      <div class="eyebrow">Метрики проверки гипотезы</div>
+      <h2>Что измеряем.</h2>
+      <div class="cols" style="grid-template-columns:repeat(2,1fr);gap:22px">
+        <div class="tile"><div class="k">Активация</div><div class="big num">40%</div><p>установка → первое пополнение</p></div>
+        <div class="tile"><div class="k">Первая покупка</div><div class="big num">25%</div><p>купили актив за 7 дней</p></div>
+        <div class="tile"><div class="k">Выбор кешбэка</div><div class="big num gold">60%</div><p>выбрали золото, а не BTC</p></div>
+        <div class="tile"><div class="k">Возвраты</div><div class="big num">35%</div><p>D30: вернулись через месяц</p></div>
+      </div>
+      <p class="note">Целевые значения — гипотезы для пилота. Метрики уже считаются в прототипе: режим жюри.</p>
+    </div>
+    <div class="phones">
+      <figure class="phone"><img src="shots/jury.webp" alt="Режим жюри: воронка и метрики сессии"><figcaption>Режим жюри</figcaption></figure>
+    </div>
+  </div>
+</section>
+
+<!-- 18. Как сделано -->
+<section class="slide" data-title="Как сделано">
+  <div class="eyebrow">Прототип</div>
+  <h2>Собран с ИИ за день.</h2>
+  <div class="cols c4">
+    <div class="tile"><div class="k">Vibe coding</div><h3>Claude Code</h3><p>Код, сценарии, тексты и проверки — через ИИ-агента</p></div>
+    <div class="tile"><div class="k">Интерфейс</div><h3>React · Liquid Glass</h3><p>Vite, Tailwind, glisse, Recharts, светлая и тёмная тема</p></div>
+    <div class="tile"><div class="k">3D</div><h3>three.js</h3><p>Реалистичный слиток и мультяшные монеты, крутятся пальцем</p></div>
+    <div class="tile"><div class="k">Данные</div><h3>Только тестовые</h3><p>Котировки, балансы, биржи и вход — имитация, без реальных денег</p></div>
+  </div>
+</section>
+
+<!-- 19. Дальше -->
+<section class="slide" data-title="Что дальше">
+  <div class="eyebrow">Что дальше</div>
+  <h2>От прототипа к пилоту.</h2>
+  <div class="cols c4">
+    <div class="tile"><div class="k">01 · Спрос</div><h3>Интервью и лендинг</h3><p>20 интервью со студентами, калькулятор кешбэка как лендинг</p></div>
+    <div class="tile"><div class="k">02 · Модель</div><h3>МФЦА и кастодиан</h3><p>Регуляторная схема токена, налоговый статус кешбэка</p></div>
+    <div class="tile"><div class="k">03 · Пилот</div><h3>Сотрудники банка</h3><p>Закрытый пилот, замер воронки из режима жюри</p></div>
+    <div class="tile"><div class="k">04 · Рост</div><h3>LLM-помощник</h3><p>Ограничен данными клиента и запретом на советы</p></div>
+  </div>
+</section>
+
+<!-- 20. Финал -->
+<section class="slide" data-title="Спасибо">
+  <h1 class="brand" style="font-size:190px">bozzhyra<i>.</i></h1>
+  <p class="lead" style="font-size:52px;max-width:none">Спасибо. Переходим к демо.</p>
+</section>
+
+</div></div>
+
+<button class="navbtn prev" id="prev" aria-label="Предыдущий слайд"></button>
+<button class="navbtn next" id="next" aria-label="Следующий слайд"></button>
+<div class="hud" id="hud" aria-hidden="true"></div>
+<div class="hint">← → или пробел · F — полный экран</div>
+
+<script>
+(() => {
+  const stage = document.getElementById('stage')
+  const slides = [...document.querySelectorAll('.slide')]
+  const hud = document.getElementById('hud')
+  slides.forEach(() => hud.appendChild(document.createElement('i')))
+  const dots = [...hud.children]
+
+  const fit = () => {
+    const k = Math.min(innerWidth / 1920, innerHeight / 1080)
+    stage.style.transform = `scale(${k})`
+  }
+  addEventListener('resize', fit); fit()
+
+  let i = Math.max(0, Math.min(slides.length - 1, (parseInt(location.hash.slice(1), 10) || 1) - 1))
+  const show = (n) => {
+    i = Math.max(0, Math.min(slides.length - 1, n))
+    slides.forEach((s, j) => s.classList.toggle('on', j === i))
+    dots.forEach((d, j) => d.classList.toggle('on', j === i))
+    document.title = `${i + 1}/${slides.length} · Bozzhyra Keynote`
+    try { history.replaceState(null, '', '#' + (i + 1)) } catch {}
+  }
+  show(i)
+
+  addEventListener('keydown', (e) => {
+    if (['ArrowRight', 'ArrowDown', 'PageDown', ' ', 'Enter'].includes(e.key)) { e.preventDefault(); show(i + 1) }
+    if (['ArrowLeft', 'ArrowUp', 'PageUp', 'Backspace'].includes(e.key)) { e.preventDefault(); show(i - 1) }
+    if (e.key === 'Home') show(0)
+    if (e.key === 'End') show(slides.length - 1)
+    if (e.key === 'f' || e.key === 'F') {
+      try { document.fullscreenElement ? document.exitFullscreen() : document.documentElement.requestFullscreen() } catch {}
+    }
+  })
+  document.getElementById('prev').onclick = () => show(i - 1)
+  document.getElementById('next').onclick = () => show(i + 1)
+
+  let x0 = null
+  addEventListener('touchstart', (e) => { x0 = e.touches[0].clientX }, { passive: true })
+  addEventListener('touchend', (e) => {
+    if (x0 == null) return
+    const dx = e.changedTouches[0].clientX - x0
+    if (Math.abs(dx) > 40) show(i + (dx < 0 ? 1 : -1))
+    x0 = null
+  })
+})()
+</script>

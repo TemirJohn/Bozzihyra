@@ -21,7 +21,7 @@ export default function Portfolio({ nav }) {
         <div className="px-1">
           <Label>Всего</Label>
           <div className="font-display font-semibold text-[32px] num leading-tight mt-1">{money(totals.all)}</div>
-          <div className="text-[12px] text-mute mt-1 num">В Bozzihyra {money(totals.own)} · у партнёров {money(totals.partners)}</div>
+          <div className="text-[12px] text-mute mt-1 num">В Bozzhyra {money(totals.own)} · у партнёров {money(totals.partners)}</div>
         </div>
         {totals.all > 0 && (
           <div className="flex h-3 rounded-full overflow-hidden gap-0.5">

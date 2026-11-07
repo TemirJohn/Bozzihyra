@@ -126,7 +126,7 @@ export default function Profile({ nav }) {
       ) : (
         <Button variant="ghost" onClick={() => setConfirmReset(true)}><RotateCcw size={16} /> Сбросить демо</Button>
       )}
-      <button onClick={tapVersion} className="text-[11px] text-mute text-center select-none">Bozzihyra 0.4 · демо-версия · данные тестовые</button>
+      <button onClick={tapVersion} className="text-[11px] text-mute text-center select-none">Bozzhyra 0.4 · демо-версия · данные тестовые</button>
     </div>
   )
 }

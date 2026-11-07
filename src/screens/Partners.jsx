@@ -145,7 +145,7 @@ function ConnectFlow({ partner, onClose }) {
       <div className="flex flex-col gap-4 pt-2">
         <div className="flex items-center gap-3">
           <Logo p={partner} />
-          <div className="text-[14px]">Bozzihyra запрашивает доступ к вашему аккаунту <b>{partner.name}</b></div>
+          <div className="text-[14px]">Bozzhyra запрашивает доступ к вашему аккаунту <b>{partner.name}</b></div>
         </div>
         <Card className="flex flex-col gap-3">
           <Perm icon={<Eye size={16} />} title="Просмотр балансов" text="Покажем их в общем портфеле" />

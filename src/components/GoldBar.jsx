@@ -27,7 +27,7 @@ function engraving() {
     g.textAlign = 'center'
     g.textBaseline = 'middle'
     g.font = '600 92px "Unbounded", "Onest", sans-serif'
-    g.fillText('BOZZIHYRA', 512, 150 + dy)
+    g.fillText('BOZZHYRA', 512, 150 + dy)
     g.font = '700 150px "Unbounded", "Onest", sans-serif'
     g.fillText('999,9', 512, 290 + dy)
     g.font = '500 64px "Onest", sans-serif'

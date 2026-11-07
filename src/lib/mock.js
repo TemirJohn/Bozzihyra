@@ -64,7 +64,7 @@ export const CARD = {
   cvv: '381',
   iban: 'KZ86 8560 0000 1234 5678',
   bic: 'KCJBKZKX',
-  bank: 'Bozzihyra (тестовый банк)',
+  bank: 'Bozzhyra (тестовый банк)',
 }
 
 export const DEVICES = [

@@ -30,7 +30,7 @@ const RISK = {
   stock: 'Понимаю, что цена акции может снижаться, а прошлая динамика не гарантирует будущий результат.',
 }
 
-export default function Trade({ asset: assetId = 'gold', mode, nav }) {
+export default function Trade({ asset: assetId = 'gold', mode, nav, autoQuote }) {
   const { state, dispatch, prices } = useStore()
   const asset = ASSETS[assetId]
   const market = prices[assetId]
@@ -38,9 +38,9 @@ export default function Trade({ asset: assetId = 'gold', mode, nav }) {
   const unit = perUnit(asset)
   const name = asset.kind === 'gold' ? 'золото' : asset.name
 
-  const [step, setStep] = useState('input') // input | quote | processing | success
+  const [step, setStep] = useState(autoQuote ? 'quote' : 'input') // input | quote | processing | success
   const [raw, setRaw] = useState(isBuy ? '20000' : '')
-  const [quote, setQuote] = useState(null)
+  const [quote, setQuote] = useState(() => (autoQuote ? makeQuote(asset, mode, 20000, market) : null))
   const [left, setLeft] = useState(FEES.quoteTtl)
   const [agree, setAgree] = useState(false)
   const [gate, setGate] = useState(false)

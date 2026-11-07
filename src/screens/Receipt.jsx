@@ -52,14 +52,14 @@ export default function Receipt({ id, back, nav }) {
   const date = new Date(t.ts)
   const txId = `TX-${t.id.toUpperCase()}`
   const text = [
-    'Bozzihyra · чек операции (тест)', KIND[t.kind], amount, '',
+    'Bozzhyra · чек операции (тест)', KIND[t.kind], amount, '',
     ...rows.map(([k, v]) => `${k}: ${v}`),
     `Дата: ${date.toLocaleString('ru-RU')}`, `Статус: Проведена`, `ID: ${txId}`,
   ].join('\n')
 
   const share = async () => {
     try {
-      if (navigator.share) await navigator.share({ title: 'Чек Bozzihyra', text })
+      if (navigator.share) await navigator.share({ title: 'Чек Bozzhyra', text })
       else { await navigator.clipboard.writeText(text); setFlash('Чек скопирован') }
     } catch { /* пользователь закрыл окно */ }
   }
@@ -119,7 +119,7 @@ export default function Receipt({ id, back, nav }) {
             <div className="flex justify-between gap-4"><dt className="text-mute">Дата и время</dt><dd className="num">{date.toLocaleString('ru-RU', { dateStyle: 'medium', timeStyle: 'short' })}</dd></div>
             <div className="flex justify-between gap-4"><dt className="text-mute">ID операции</dt><dd className="font-mono text-[12px]">{txId}</dd></div>
           </dl>
-          <div className="text-center text-[11px] text-mute mt-5">Bozzihyra · тестовый чек</div>
+          <div className="text-center text-[11px] text-mute mt-5">Bozzhyra · тестовый чек</div>
         </div>
 
         {flash && <Notice tone="ok">{flash}</Notice>}

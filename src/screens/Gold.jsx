@@ -8,13 +8,15 @@ import { Button, Card, Label, Row, Disclaimer, Section } from '../components/ui.
 import PriceChart, { useSeries } from '../components/PriceChart.jsx'
 import GoldBar from '../components/GoldBar.jsx'
 
+import { q } from '../lib/shot.js'
+
 const VIEWS = [
   { value: 'price', label: 'Цена' },
   { value: 'about', label: 'О токене' },
 ]
 
 export default function Gold({ nav }) {
-  const [view, setView] = useState('price')
+  const [view, setView] = useState(q('gv') || 'price')
   return (
     <div className="px-4 pt-[max(16px,env(safe-area-inset-top))] pb-6 flex flex-col gap-4">
       <header className="flex items-center gap-2.5 px-1">
