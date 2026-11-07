@@ -1,0 +1,130 @@
+@import "tailwindcss";
+
+/* Bozzihyra: liquid-glass panels drifting over a still wallpaper of gold, sage and clay light.
+   One accent: gold. Display = Unbounded (balances, headings), body = Onest, figures = JetBrains Mono. */
+:root {
+  --bg: #e8ebe5;
+  --fg: #12161b;
+  --mute: #5c635b;
+  --line: rgb(18 22 27 / 0.1);
+  --card: rgb(255 255 255 / 0.62);
+  --vault: #14181d;
+  --gold: #9c721c;
+  --gold-fill: #d9aa45;
+  --on-gold: #1c1407;
+  --gold-soft: rgb(217 170 69 / 0.22);
+  --up: #1b7549;
+  --down: #b3362e;
+  --warn: #9a610e;
+  --blob-1: #f2c55e;
+  --blob-2: #94c6b0;
+  --blob-3: #f0ad8f;
+  --chart-grid: rgb(18 22 27 / 0.1);
+  --chart-text: #5c635b;
+
+  /* glisse: gold accent for filled buttons, tab selection and switches */
+  --lg-fill: #d9aa45;
+  --lg-on: #d9aa45;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --bg: #0c0f12;
+    --fg: #eff1ec;
+    --mute: #9aa198;
+    --line: rgb(255 255 255 / 0.1);
+    --card: rgb(30 34 40 / 0.6);
+    --vault: #1a1f26;
+    --gold: #e6bd62;
+    --gold-soft: rgb(230 189 98 / 0.16);
+    --up: #52c690;
+    --down: #ff6d60;
+    --warn: #e9a640;
+    --blob-1: #6f4f15;
+    --blob-2: #17443a;
+    --blob-3: #4a2820;
+    --chart-grid: rgb(255 255 255 / 0.1);
+    --chart-text: #9aa198;
+  }
+}
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --bg: #0c0f12;
+  --fg: #eff1ec;
+  --mute: #9aa198;
+  --line: rgb(255 255 255 / 0.1);
+  --card: rgb(30 34 40 / 0.6);
+  --vault: #1a1f26;
+  --gold: #e6bd62;
+  --gold-soft: rgb(230 189 98 / 0.16);
+  --up: #52c690;
+  --down: #ff6d60;
+  --warn: #e9a640;
+  --blob-1: #6f4f15;
+  --blob-2: #17443a;
+  --blob-3: #4a2820;
+  --chart-grid: rgb(255 255 255 / 0.1);
+  --chart-text: #9aa198;
+}
+
+@theme inline {
+  --color-paper: var(--bg);
+  --color-ink: var(--fg);
+  --color-mute: var(--mute);
+  --color-line: var(--line);
+  --color-card: var(--card);
+  --color-vault: var(--vault);
+  --color-gold: var(--gold);
+  --color-gold-fill: var(--gold-fill);
+  --color-on-gold: var(--on-gold);
+  --color-gold-2: #e9c475;
+  --color-gold-soft: var(--gold-soft);
+  --color-up: var(--up);
+  --color-down: var(--down);
+  --color-warn: var(--warn);
+  --font-display: "Unbounded", "Onest", system-ui, sans-serif;
+  --font-sans: "Onest", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, Menlo, monospace;
+}
+
+html, body, #root { height: 100%; }
+body { margin: 0; background: var(--bg); color: var(--fg); font-family: var(--font-sans); -webkit-font-smoothing: antialiased; }
+.num { font-variant-numeric: tabular-nums; }
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar { scrollbar-width: none; }
+button { cursor: pointer; }
+button:disabled { cursor: not-allowed; }
+:focus-visible { outline: 2px solid var(--gold-fill); outline-offset: 2px; }
+
+/* Wallpaper behind the glass: static light pools the panels refract as they scroll over */
+.bz-wall {
+  background:
+    radial-gradient(70% 38% at 92% 4%, var(--blob-1), transparent 72%),
+    radial-gradient(60% 34% at -6% 42%, var(--blob-2), transparent 72%),
+    radial-gradient(70% 36% at 104% 88%, var(--blob-3), transparent 72%),
+    radial-gradient(40% 22% at 20% 100%, var(--blob-1), transparent 72%),
+    var(--bg);
+}
+.bz-coin { background: radial-gradient(circle at 35% 30%, #f6dd98, #d0a03c 52%, #6e5016); }
+
+/* glisse overrides. Unlayered, so they sit beside the library's own unlayered rules. */
+.lg-button.bz-cta { width: 100%; height: 52px; border-radius: 26px; font-size: 15px; font-weight: 600; }
+.lg-button.bz-sm { height: 36px; border-radius: 18px; padding: 0 14px; font-size: 13px; font-weight: 600; }
+.lg-button[data-variant="filled"]:not([data-destructive]) { color: var(--on-gold); }
+.lg-tab-bar.bz-tabs[data-icons] { --lg-tab-width: 66px; --lg-tab-height: 54px; }
+.lg-segmented.bz-seg { --lg-tab-width: 74px; }
+.lg-glass.bz-glass-strong { --lg-blur: 14px; }
+
+@layer components {
+  .bz-card { border-radius: 26px; padding: 16px; --lg-blur: 10px; }
+}
+
+@keyframes rise { from { transform: translateY(12px); opacity: 0; } to { transform: none; opacity: 1; } }
+@keyframes pop { 0% { transform: scale(.6); opacity: 0 } 60% { transform: scale(1.08); opacity: 1 } 100% { transform: scale(1) } }
+@keyframes slideUp { from { transform: translateY(100%); } to { transform: none; } }
+.anim-rise { animation: rise .35s ease-out both; }
+.anim-pop { animation: pop .5s ease-out both; }
+.anim-slide { animation: slideUp .3s cubic-bezier(.2,.8,.2,1) both; }
+@media (prefers-reduced-motion: reduce) { .anim-rise, .anim-pop, .anim-slide { animation: none; } }
