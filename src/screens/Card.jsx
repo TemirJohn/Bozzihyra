@@ -1,12 +1,13 @@
 import { useState } from 'react'
 import { createPortal } from 'react-dom'
-import { Wifi, ChevronRight, Sparkles, AlertCircle, X, Smartphone, Snowflake, Repeat } from 'lucide-react'
+import { ChevronRight, Sparkles, AlertCircle, X, Smartphone, Snowflake, Repeat } from 'lucide-react'
 import { useStore } from '../store.jsx'
 import { ASSETS, MERCHANTS, FEES, PARTNERS, PRICES } from '../lib/mock.js'
 import { kzt, qty } from '../lib/format.js'
 import { Card as Box, Label, Button, Notice } from '../components/ui.jsx'
+import { CardFace } from './CardControls.jsx'
 
-const CB_LABEL = { gold: 'в золоте', btc: 'в BTC', kzt: 'в тенге' }
+const CB_LABEL = { gold: 'в золоте', btc: 'в BTC', kzt: 'в золоте' }
 
 export default function CardScreen({ nav }) {
   const { state, dispatch, prices } = useStore()
@@ -16,6 +17,10 @@ export default function CardScreen({ nav }) {
   const spentToday = state.txs
     .filter((t) => t.kind === 'pay' && new Date(t.ts).toDateString() === new Date().toDateString())
     .reduce((sum, t) => sum - t.kzt, 0)
+  const onlineMcc = MERCHANTS.filter((m) => m.online).map((m) => m.mcc)
+  const spentOnline = state.txs
+    .filter((t) => t.kind === 'pay' && onlineMcc.includes(t.mcc) && new Date(t.ts).toDateString() === new Date().toDateString())
+    .reduce((sum, t) => sum - t.kzt, 0)
 
   const decline = (m, code, title, reason, actions) => {
     dispatch({ type: 'payDeclined', code, merchant: m.name, reason })
@@ -24,11 +29,17 @@ export default function CardScreen({ nav }) {
 
   const pay = (m) => {
     if (s.frozen) return decline(m, 'frozen', 'Карта заморожена',
-      'Оплата отклонена, потому что карта заморожена в настройках. Разморозьте её, чтобы платить.', ['unfreeze'])
+      'Оплата отклонена, потому что карта заморожена. Разморозьте её, чтобы платить.', ['unfreeze'])
     if (m.online && !s.online) return decline(m, 'online_off', 'Оплата в интернете выключена',
-      `${m.name} — онлайн-покупка. Включите оплату в интернете в профиле.`, ['enableOnline'])
+      `${m.name} — онлайн-покупка. Включите оплату в интернете.`, ['online'])
+    if (m.sub && !s.subs) return decline(m, 'subs_off', 'Подписки запрещены',
+      `${m.name} — автосписание по подписке. Разрешите подписки в настройках онлайн-оплаты.`, ['online'])
+    if (m.foreign && !s.foreign) return decline(m, 'foreign_off', 'Зарубежные сайты запрещены',
+      `${m.name} — зарубежный сервис. Разрешите оплату на зарубежных сайтах.`, ['online'])
+    if (m.online && spentOnline + m.amount > s.onlineLimit) return decline(m, 'online_limit', 'Превышен онлайн-лимит',
+      `Сегодня онлайн потрачено ${kzt(spentOnline)} из ${kzt(s.onlineLimit)}. Увеличьте онлайн-лимит или попробуйте завтра.`, ['limits'])
     if (spentToday + m.amount > s.dailyLimit) return decline(m, 'limit', 'Превышен дневной лимит',
-      `Сегодня уже потрачено ${kzt(spentToday)} из ${kzt(s.dailyLimit)}. Увеличьте лимит в профиле или попробуйте завтра.`, ['profile'])
+      `Сегодня уже потрачено ${kzt(spentToday)} из ${kzt(s.dailyLimit)}. Увеличьте лимит или попробуйте завтра.`, ['limits'])
 
     let convert = null
     const lack = m.amount - state.balances.kzt
@@ -45,14 +56,14 @@ export default function CardScreen({ nav }) {
     const cb = m.amount * FEES.cashbackRate
     const reward = state.cashback === 'gold' ? `+${qty(ASSETS.gold, cb / prices.gold)} золота ≈ ${kzt(cb, 2)}`
       : state.cashback === 'btc' ? `+${qty(ASSETS.btc, cb / prices.btc)}` : `+${kzt(cb, 2)}`
-    dispatch({ type: 'pay', merchant: m.name, cat: m.cat, amount: m.amount, prices, convert })
+    dispatch({ type: 'pay', merchant: m.name, cat: m.cat, mcc: m.mcc, amount: m.amount, prices, convert })
     setResult({ ok: true, merchant: m, reward, convert })
   }
 
   const ACTIONS = {
-    unfreeze: <Button key="u" onClick={() => { dispatch({ type: 'setting', key: 'frozen', value: false }); setResult(null) }}>Разморозить карту</Button>,
-    enableOnline: <Button key="o" onClick={() => { dispatch({ type: 'setting', key: 'online', value: true }); setResult(null) }}>Включить оплату в интернете</Button>,
-    profile: <Button key="p" onClick={() => { setResult(null); nav.tab('profile') }}>Открыть настройки</Button>,
+    unfreeze: <Button key="u" onClick={() => { setResult(null); nav.open('freeze') }}>Разморозить карту</Button>,
+    online: <Button key="o" onClick={() => { setResult(null); nav.open('online') }}>Настройки онлайн-оплаты</Button>,
+    limits: <Button key="l" onClick={() => { setResult(null); nav.open('limits') }}>Изменить лимиты</Button>,
     topup: <Button key="t" onClick={() => { setResult(null); nav.open('topup') }}>Пополнить баланс</Button>,
     partners: <Button key="b" variant="ghost" onClick={() => { setResult(null); nav.tab('partners') }}>Биржи-партнёры</Button>,
   }
@@ -61,22 +72,8 @@ export default function CardScreen({ nav }) {
     <div className="px-4 pt-[max(16px,env(safe-area-inset-top))] pb-6 flex flex-col gap-4 relative">
       <h1 className="font-semibold text-[18px] px-1">Карта</h1>
 
-      <div className="aspect-[1.586] max-w-full rounded-[22px] p-5 text-white flex flex-col justify-between relative overflow-hidden isolate"
-        style={{ background: 'linear-gradient(135deg, #222830 0%, #14181d 60%, #3a2f17 100%)' }}>
-        <div className={`bz-coin absolute -right-16 -bottom-20 w-56 h-56 rounded-full -z-10 ${s.frozen ? 'opacity-30 grayscale' : 'opacity-80'}`} />
-        <div className="flex justify-between items-start">
-          <span className="font-display font-semibold text-[17px]">bozzihyra<span className="text-gold-fill">.</span></span>
-          {s.frozen ? <Snowflake size={20} className="text-sky-200" /> : <Wifi size={20} className="rotate-90 text-white/70" />}
-        </div>
-        <div>
-          <div className="text-[11px] text-white/55 uppercase tracking-[.08em]">Доступно</div>
-          <div className="font-display font-semibold text-[24px] num">{kzt(state.balances.kzt)}</div>
-          <div className="flex justify-between items-end mt-2 text-[13px] text-white/75">
-            <span className="num tracking-wider">•••• 2026</span>
-            <span>VISA · виртуальная</span>
-          </div>
-        </div>
-      </div>
+      <CardFace onClick={() => nav.open('cardPage')} />
+      <p className="text-[12px] text-mute text-center -mt-2">Нажмите на карту: реквизиты, заморозка, лимиты</p>
 
       <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-[13px] text-mute px-1">
         <span className="flex items-center gap-1.5"><Smartphone size={15} /> Apple Pay (тест)</span>
@@ -86,14 +83,14 @@ export default function CardScreen({ nav }) {
 
       {s.frozen && (
         <Notice tone="warn" icon={<Snowflake size={18} />} title="Карта заморожена"
-          action={<button className="text-[13px] font-semibold underline" onClick={() => dispatch({ type: 'setting', key: 'frozen', value: false })}>Разморозить</button>}>
+          action={<button className="text-[13px] font-semibold underline" onClick={() => nav.open('freeze')}>Разморозить</button>}>
           Оплаты будут отклоняться, пока вы не разморозите карту.
         </Notice>
       )}
 
       <Box role="button" tabIndex={0} onClick={() => nav.open('cashback')} onKeyDown={(e) => { if (e.key === 'Enter') nav.open('cashback') }}
         className="flex items-center gap-3 text-left cursor-pointer">
-        <span className="w-10 h-10 rounded-full bg-gold-fill text-on-gold grid place-items-center"><Sparkles size={18} /></span>
+        <span className="w-10 h-10 rounded-full bg-ink text-paper grid place-items-center"><Sparkles size={18} /></span>
         <div className="flex-1">
           <div className="font-semibold text-[15px]">Кешбэк 1% {CB_LABEL[state.cashback]}</div>
           <div className="text-[12px] text-mute">Изменить, в чём получать кешбэк</div>

@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { TabBar, Glass } from 'glisse'
-import { Home as HomeIcon, Coins, CreditCard, Link2, User } from 'lucide-react'
+import { Home as HomeIcon, Coins, CreditCard, Link2, User, X } from 'lucide-react'
 import { useStore } from './store.jsx'
 import Onboarding from './screens/Onboarding.jsx'
 import Home from './screens/Home.jsx'
@@ -16,6 +16,10 @@ import Notifications, { NOTE_ICON } from './screens/Notifications.jsx'
 import History from './screens/History.jsx'
 import Portfolio from './screens/Portfolio.jsx'
 import Jury from './screens/Jury.jsx'
+import Receipt from './screens/Receipt.jsx'
+import { CardPage, FreezePage, OnlinePage, LimitsPage } from './screens/CardControls.jsx'
+import { SecurityPage, DocumentsPage, TaxesPage } from './screens/ProfilePages.jsx'
+import { LockScreen } from './components/Security.jsx'
 
 const TABS = [
   { value: 'home', label: 'Главная', icon: <HomeIcon /> },
@@ -26,43 +30,64 @@ const TABS = [
 ]
 
 const SCREENS = { home: Home, gold: Gold, card: Card, partners: Partners, profile: Profile }
-const MODALS = { trade: Trade, topup: TopUp, cashback: Cashback, asset: AssetPanel, notifications: Notifications, history: History, portfolio: Portfolio, jury: Jury }
+const MODALS = {
+  trade: Trade, topup: TopUp, cashback: Cashback, asset: AssetPanel, notifications: Notifications,
+  history: History, portfolio: Portfolio, jury: Jury, receipt: Receipt,
+  cardPage: CardPage, freeze: FreezePage, online: OnlinePage, limits: LimitsPage,
+  security: SecurityPage, documents: DocumentsPage, taxes: TaxesPage,
+}
 
-const juryFromUrl = () => {
-  try { return new URLSearchParams(location.search).get('jury') === '1' } catch { return false }
+const urlFlag = (name) => {
+  try { return new URLSearchParams(location.search).get(name) === '1' } catch { return false }
 }
 
 export default function App() {
   const { state } = useStore()
   const [tab, setTab] = useState('home')
-  const [modal, setModal] = useState(() => (juryFromUrl() ? { type: 'jury' } : null))
+  const [modal, setModal] = useState(() => (urlFlag('jury') ? { type: 'jury' } : null))
+  // Экран входа при открытии (кроме режима жюри, чтобы сразу показывать метрики)
+  const [locked, setLocked] = useState(() => state.onboarded && !urlFlag('jury'))
   const [banner, setBanner] = useState(null)
 
   const nav = {
     tab: (t) => { setModal(null); setTab(t) },
     open: (type, props = {}) => setModal({ type, ...props }),
     close: () => setModal(null),
+    lock: () => setLocked(true),
   }
 
-  // Всплывающий баннер для каждого нового уведомления (если push включены)
+  // Новое уведомление → баннер (если push включены и центр уведомлений не открыт)
   const lastId = useRef(state.notifications[0]?.id)
   useEffect(() => {
     const top = state.notifications[0]
     if (!top || top.id === lastId.current) return
     lastId.current = top.id
-    if (!state.settings.push || modal?.type === 'notifications') return
-    setBanner(top)
+    if (state.settings.push && modal?.type !== 'notifications') setBanner(top)
+  }, [state.notifications, state.settings.push, modal])
+
+  // Таймер скрытия привязан к самому баннеру: каждый новый баннер живёт 4 секунды
+  useEffect(() => {
+    if (!banner) return
     const id = setTimeout(() => setBanner(null), 4000)
     return () => clearTimeout(id)
-  }, [state.notifications, state.settings.push, modal])
+  }, [banner])
+
+  // Свайп вверх закрывает баннер
+  const swipe = useRef(null)
+  const onDown = (e) => { swipe.current = e.clientY }
+  const onUp = (e) => {
+    if (swipe.current != null && e.clientY - swipe.current < -25) setBanner(null)
+    swipe.current = null
+  }
 
   const Screen = SCREENS[tab]
   const Modal = modal && MODALS[modal.type]
   const BannerIcon = banner && (NOTE_ICON[banner.kind] || NOTE_ICON.info)
+  const modalKey = modal && [modal.type, modal.id, modal.asset, modal.mode, modal.filter].filter(Boolean).join(':')
 
   return (
     <div className="h-full w-full flex items-center justify-center sm:p-6 bz-wall">
-      <div id="phone" className="relative isolate h-full w-full overflow-hidden bg-paper sm:h-[844px] sm:max-h-full sm:w-[390px] sm:rounded-[48px] sm:shadow-[0_30px_80px_-20px_rgba(0,0,0,.45)] sm:ring-[10px] sm:ring-[#0b0d10] flex flex-col">
+      <div id="phone" className="relative isolate h-full w-full overflow-hidden bg-paper sm:h-[844px] sm:max-h-full sm:w-[390px] sm:rounded-[48px] sm:shadow-[0_30px_80px_-20px_rgba(0,0,0,.35)] sm:ring-[10px] sm:ring-[#0a0a0a] flex flex-col">
         {!state.onboarded ? (
           <Onboarding />
         ) : (
@@ -73,24 +98,30 @@ export default function App() {
             <div className="absolute inset-x-0 bottom-0 z-20 flex justify-center pb-[max(14px,env(safe-area-inset-bottom))] pointer-events-none">
               <TabBar className="bz-tabs pointer-events-auto" aria-label="Разделы" items={TABS} value={tab} onValueChange={nav.tab} />
             </div>
-            {Modal && <Modal key={modal.type + (modal.asset || modal.id || '') + (modal.mode || '')} {...modal} nav={nav} />}
+            {Modal && <Modal key={modalKey} {...modal} nav={nav} />}
           </>
         )}
 
-        {banner && (
-          <div className="absolute inset-x-3 top-[max(10px,env(safe-area-inset-top))] z-50 anim-rise" role="status">
-            <Glass className="bz-glass-strong rounded-[22px] cursor-pointer" onClick={() => { setBanner(null); nav.open('notifications') }}>
+        {banner && !locked && (
+          <div className="absolute inset-x-3 top-[max(10px,env(safe-area-inset-top))] z-50 anim-rise touch-none" role="status"
+            onPointerDown={onDown} onPointerUp={onUp}>
+            <Glass className="bz-glass-strong rounded-[22px]">
               <div className="flex gap-3 items-center p-3">
-                <span className={`w-9 h-9 rounded-full grid place-items-center shrink-0 ${BannerIcon.cls}`}><BannerIcon.icon size={16} /></span>
-                <div className="flex-1 min-w-0">
-                  <div className="text-[13px] font-semibold truncate">{banner.title}</div>
-                  <div className="text-[12px] text-mute truncate">{banner.text}</div>
-                </div>
-                <span className="text-[11px] text-mute shrink-0">сейчас</span>
+                <button className="flex gap-3 items-center flex-1 min-w-0 text-left" onClick={() => { setBanner(null); nav.open('notifications') }}>
+                  <span className={`w-9 h-9 rounded-full grid place-items-center shrink-0 ${BannerIcon.cls}`}><BannerIcon.icon size={16} /></span>
+                  <span className="flex-1 min-w-0">
+                    <span className="block text-[13px] font-semibold truncate">{banner.title}</span>
+                    <span className="block text-[12px] text-mute truncate">{banner.text}</span>
+                  </span>
+                </button>
+                <button onClick={() => setBanner(null)} aria-label="Закрыть уведомление"
+                  className="w-8 h-8 rounded-full grid place-items-center bg-ink/8 shrink-0"><X size={15} /></button>
               </div>
             </Glass>
           </div>
         )}
+
+        {locked && state.onboarded && <LockScreen onUnlock={() => setLocked(false)} />}
       </div>
     </div>
   )

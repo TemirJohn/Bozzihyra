@@ -6,15 +6,15 @@ export const TODAY = new Date(2026, 10, 7)
 export const ASSETS = {
   gold: { id: 'gold', kind: 'gold', symbol: 'bzGOLD', name: 'Золото', price: 66840, spread: 0.005, vol: 0.02, seed: 7, color: '#d9aa45',
     about: '1 bzGOLD = 1 г золота пробы 999,9. Обеспечен физическим металлом 1:1.' },
-  btc: { id: 'btc', kind: 'crypto', symbol: 'BTC', name: 'Bitcoin', price: 52_400_000, spread: 0.01, vol: 0.045, seed: 11, color: '#e8912d',
+  btc: { id: 'btc', kind: 'crypto', symbol: 'BTC', name: 'Bitcoin', price: 52_400_000, spread: 0.01, vol: 0.045, seed: 11, color: '#8e8e93',
     about: 'Первая криптовалюта. Высокая волатильность: цена может сильно меняться за день.' },
-  eth: { id: 'eth', kind: 'crypto', symbol: 'ETH', name: 'Ethereum', price: 1_820_000, spread: 0.01, vol: 0.055, seed: 13, color: '#6f7fd8',
+  eth: { id: 'eth', kind: 'crypto', symbol: 'ETH', name: 'Ethereum', price: 1_820_000, spread: 0.01, vol: 0.055, seed: 13, color: '#8e8e93',
     about: 'Криптовалюта сети Ethereum. Волатильность выше, чем у акций и золота.' },
-  nvda: { id: 'nvda', kind: 'stock', symbol: 'NVDA', name: 'NVIDIA', price: 98_800, spread: 0.003, vol: 0.03, seed: 17, color: '#76b043',
+  nvda: { id: 'nvda', kind: 'stock', symbol: 'NVDA', name: 'NVIDIA', price: 98_800, spread: 0.003, vol: 0.03, seed: 17, color: '#8e8e93',
     about: 'Токенизированная акция NVIDIA: цифровое право на акцию, хранящуюся у кастодиана 1:1.' },
   aapl: { id: 'aapl', kind: 'stock', symbol: 'AAPL', name: 'Apple', price: 135_200, spread: 0.003, vol: 0.018, seed: 19, color: '#8e8e93',
     about: 'Токенизированная акция Apple: цифровое право на акцию, хранящуюся у кастодиана 1:1.' },
-  tsla: { id: 'tsla', kind: 'stock', symbol: 'TSLA', name: 'Tesla', price: 223_600, spread: 0.003, vol: 0.04, seed: 23, color: '#d0473f',
+  tsla: { id: 'tsla', kind: 'stock', symbol: 'TSLA', name: 'Tesla', price: 223_600, spread: 0.003, vol: 0.04, seed: 23, color: '#8e8e93',
     about: 'Токенизированная акция Tesla: цифровое право на акцию, хранящуюся у кастодиана 1:1.' },
 }
 export const CRYPTO = ['btc', 'eth']
@@ -41,18 +41,43 @@ export const CUSTODY = {
 }
 
 export const MERCHANTS = [
-  { id: 'coffee', name: 'Coffee Boom', cat: 'Кофейня', amount: 1500 },
-  { id: 'magnum', name: 'Magnum', cat: 'Супермаркет', amount: 8420 },
-  { id: 'taxi', name: 'Yandex Go', cat: 'Такси', amount: 1900 },
-  { id: 'steam', name: 'Steam', cat: 'Онлайн', amount: 4990, online: true },
-  { id: 'kino', name: 'Kinopark', cat: 'Кино', amount: 3200 },
+  { id: 'coffee', name: 'Coffee Boom', cat: 'Кофейня', amount: 1500, mcc: '5814' },
+  { id: 'magnum', name: 'Magnum', cat: 'Супермаркет', amount: 8420, mcc: '5411' },
+  { id: 'taxi', name: 'Yandex Go', cat: 'Такси', amount: 1900, mcc: '4121' },
+  { id: 'steam', name: 'Steam', cat: 'Онлайн-игры', amount: 4990, mcc: '5816', online: true, foreign: true },
+  { id: 'spotify', name: 'Spotify', cat: 'Подписка', amount: 1990, mcc: '5815', online: true, sub: true, foreign: true },
+  { id: 'kino', name: 'Kinopark', cat: 'Кино', amount: 3200, mcc: '7832' },
+]
+
+// Валюта отображения: только пересчёт для просмотра, счета остаются в тенге
+export const RATES = { KZT: 1, USD: 518, EUR: 561 }
+export const CURRENCIES = [
+  { value: 'KZT', label: '₸' },
+  { value: 'USD', label: '$' },
+  { value: 'EUR', label: '€' },
+]
+
+export const CARD = {
+  number: '4405 6390 1182 2026',
+  holder: 'AIGERIM SATPAYEVA',
+  expiry: '11/29',
+  cvv: '381',
+  iban: 'KZ86 8560 0000 1234 5678',
+  bic: 'KCJBKZKX',
+  bank: 'Bozzihyra (тестовый банк)',
+}
+
+export const DEVICES = [
+  { id: 'd1', name: 'iPhone 15', place: 'Алматы', last: 'Сейчас', current: true },
+  { id: 'd2', name: 'MacBook Air · Safari', place: 'Алматы', last: '2 дня назад' },
+  { id: 'd3', name: 'Samsung Galaxy A54', place: 'Астана', last: '12 дней назад' },
 ]
 
 export const PARTNERS = [
-  { id: 'binance', name: 'Binance KZ', allowed: true, color: '#d8a31a', balances: { USDT: 412.5, BTC: 0.0124 } },
-  { id: 'bybit', name: 'Bybit KZ', allowed: true, color: '#3a3f47', balances: { USDT: 860.0, BTC: 0.0031 } },
-  { id: 'ataix', name: 'ATAIX Eurasia', allowed: true, color: '#2f5d8a', balances: { USDT: 150.0, BTC: 0 } },
-  { id: 'cryptox', name: 'CryptoX Global', allowed: false, color: '#8a8f87', balances: {} },
+  { id: 'binance', name: 'Binance KZ', allowed: true, color: '#3a3a3c', balances: { USDT: 412.5, BTC: 0.0124 } },
+  { id: 'bybit', name: 'Bybit KZ', allowed: true, color: '#1c1c1e', balances: { USDT: 860.0, BTC: 0.0031 } },
+  { id: 'ataix', name: 'ATAIX Eurasia', allowed: true, color: '#636366', balances: { USDT: 150.0, BTC: 0 } },
+  { id: 'cryptox', name: 'CryptoX Global', allowed: false, color: '#aeaeb2', balances: {} },
 ]
 
 export const GOALS = [

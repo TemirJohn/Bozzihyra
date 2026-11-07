@@ -10,7 +10,7 @@ export const TX_FILTERS = [
   { value: 'crypto', label: 'Крипта' },
 ]
 
-export default function TxRow({ t }) {
+export default function TxRow({ t, onOpen }) {
   const asset = t.asset ? ASSETS[t.asset] : null
   let icon = {
     topup: <ArrowDownLeft size={16} />,
@@ -33,14 +33,15 @@ export default function TxRow({ t }) {
     sub = `${t.qty > 0 ? '+' : ''}${qty(asset, t.qty)} · ${time(t.ts)}`
     if (asset.kind !== 'gold') {
       icon = <span className="text-[11px] font-display font-semibold">{asset.symbol.slice(0, 2)}</span>
-      iconCls = 'text-white'
+      iconCls = 'bg-vault text-white'
     }
   }
 
+  const Tag = onOpen ? 'button' : 'div'
   return (
-    <div className="flex items-center gap-3 py-2.5 border-b border-line last:border-0">
-      <span className={`w-9 h-9 rounded-full grid place-items-center shrink-0 ${iconCls}`}
-        style={asset && asset.kind !== 'gold' && (t.kind === 'buy' || t.kind === 'sell') ? { background: asset.color } : undefined}>
+    <Tag onClick={onOpen ? () => onOpen(t.id) : undefined} aria-label={onOpen ? `Чек: ${t.title}` : undefined}
+      className="w-full text-left flex items-center gap-3 py-2.5 border-b border-line last:border-0">
+      <span className={`w-9 h-9 rounded-full grid place-items-center shrink-0 ${iconCls}`}>
         {icon}
       </span>
       <div className="flex-1 min-w-0">
@@ -48,6 +49,6 @@ export default function TxRow({ t }) {
         <div className="text-[12px] text-mute truncate">{sub}</div>
       </div>
       <div className={`num text-[14px] font-medium shrink-0 ${t.kind === 'cashback' ? 'text-gold' : (t.kzt > 0 ? 'text-up' : '')}`}>{value}</div>
-    </div>
+    </Tag>
   )
 }

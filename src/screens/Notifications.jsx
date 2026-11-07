@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { Sparkles, ArrowDownLeft, Coins, Link2, AlertCircle, TrendingUp, Info, BellOff } from 'lucide-react'
+import { Sparkles, ArrowDownLeft, Coins, Link2, AlertCircle, TrendingUp, Info, BellOff, X } from 'lucide-react'
 import { useStore } from '../store.jsx'
 import { time } from '../lib/format.js'
 import { Panel, Card } from '../components/ui.jsx'
@@ -29,6 +29,10 @@ export default function Notifications({ nav }) {
           <div className="text-[14px]">Пока тихо. Здесь появятся оплаты, кешбэк и операции.</div>
         </div>
       ) : (
+        <div className="flex flex-col gap-2">
+        <div className="flex justify-end px-1">
+          <button onClick={() => dispatch({ type: 'clearNotes' })} className="text-[13px] font-semibold">Очистить всё</button>
+        </div>
         <Card className="py-1">
           {list.map((n) => {
             const { icon: Icon, cls } = NOTE_ICON[n.kind] || NOTE_ICON.info
@@ -39,7 +43,9 @@ export default function Notifications({ nav }) {
                 <div className="flex-1 min-w-0">
                   <div className="flex items-start gap-2">
                     <div className="text-[14px] font-medium flex-1">{n.title}</div>
-                    {fresh && <span className="w-2 h-2 rounded-full bg-gold-fill mt-1.5 shrink-0" aria-label="новое" />}
+                    {fresh && <span className="w-2 h-2 rounded-full bg-ink mt-1.5 shrink-0" aria-label="новое" />}
+                    <button onClick={() => dispatch({ type: 'deleteNote', id: n.id })} aria-label="Удалить уведомление"
+                      className="w-6 h-6 -mt-0.5 rounded-full grid place-items-center text-mute hover:bg-ink/6 shrink-0"><X size={14} /></button>
                   </div>
                   <div className="text-[13px] text-mute leading-snug">{n.text}</div>
                   <div className="text-[11px] text-mute mt-1">{time(n.ts)}</div>
@@ -48,6 +54,7 @@ export default function Notifications({ nav }) {
             )
           })}
         </Card>
+        </div>
       )}
     </Panel>
   )

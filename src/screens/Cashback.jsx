@@ -1,12 +1,12 @@
 import { useState } from 'react'
 import { Check } from 'lucide-react'
 import { useStore } from '../store.jsx'
-import { kzt, grams, btc } from '../lib/format.js'
+import { grams, btc } from '../lib/format.js'
 import { Button, Panel, Disclaimer, Choice } from '../components/ui.jsx'
 
 export default function Cashback({ nav }) {
   const { state, dispatch, goldPrice, prices } = useStore()
-  const [pick, setPick] = useState(state.cashback)
+  const [pick, setPick] = useState(state.cashback === 'kzt' ? 'gold' : state.cashback)
   const cb = 100 // 1% от 10 000 ₸
 
   const options = [
@@ -19,11 +19,6 @@ export default function Cashback({ nav }) {
       id: 'btc', title: 'Bitcoin',
       text: 'Сильнее колеблется в цене: может как вырасти, так и заметно упасть.',
       example: `+${btc(cb / prices.btc)}`,
-    },
-    {
-      id: 'kzt', title: 'Тенге',
-      text: 'Обычный кешбэк. Сумма фиксирована и не меняется.',
-      example: `+${kzt(cb)}`,
     },
   ]
 
@@ -38,7 +33,7 @@ export default function Cashback({ nav }) {
           return (
             <Choice key={o.id} selected={sel} onClick={() => setPick(o.id)}>
               <div className="flex items-start gap-3">
-                <span className={`mt-0.5 shrink-0 w-6 h-6 rounded-full grid place-items-center ${sel ? 'bg-gold-fill text-on-gold' : 'border border-line'}`}>
+                <span className={`mt-0.5 shrink-0 w-6 h-6 rounded-full grid place-items-center ${sel ? 'bg-ink text-paper' : 'border border-line'}`}>
                   {sel && <Check size={14} strokeWidth={3} />}
                 </span>
                 <div className="flex-1">
@@ -54,7 +49,7 @@ export default function Cashback({ nav }) {
           )
         })}
       </div>
-      <Disclaimer>Кешбэк начисляется по котировке на момент покупки. Начисления в золоте и BTC — это активы, их стоимость может снижаться.</Disclaimer>
+      <Disclaimer>Кешбэк начисляется по котировке на момент покупки. Золото и BTC — это активы, их стоимость может снижаться. Кешбэк можно продать в любой момент и получить тенге на карту.</Disclaimer>
     </Panel>
   )
 }

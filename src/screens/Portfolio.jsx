@@ -1,17 +1,17 @@
 import { useStore } from '../store.jsx'
 import { ASSETS, STOCKS, CRYPTO } from '../lib/mock.js'
-import { kzt, qty } from '../lib/format.js'
+import { qty } from '../lib/format.js'
 import { Panel, Card, Label, Section } from '../components/ui.jsx'
 import { AssetIcon } from './AssetPanel.jsx'
 
 export default function Portfolio({ nav }) {
-  const { state, totals, prices } = useStore()
+  const { state, totals, prices, money } = useStore()
   const classes = [
     { id: 'card', label: 'Карта, ₸', value: totals.kzt, color: 'var(--fg)' },
     { id: 'gold', label: 'Золото', value: totals.gold, color: 'var(--gold-fill)' },
-    { id: 'stock', label: 'Акции', value: totals.stocks, color: '#76b043' },
-    { id: 'crypto', label: 'Крипта', value: totals.crypto, color: '#6f7fd8' },
-    { id: 'partners', label: 'На биржах (у партнёра)', value: totals.partners, color: '#9aa198' },
+    { id: 'stock', label: 'Акции', value: totals.stocks, color: 'var(--shade-1)' },
+    { id: 'crypto', label: 'Крипта', value: totals.crypto, color: 'var(--shade-2)' },
+    { id: 'partners', label: 'На биржах (у партнёра)', value: totals.partners, color: 'var(--shade-3)' },
   ]
   const held = ['gold', ...STOCKS, ...CRYPTO].filter((id) => state.balances[id] > 0)
 
@@ -20,8 +20,8 @@ export default function Portfolio({ nav }) {
       <div className="flex flex-col gap-4">
         <div className="px-1">
           <Label>Всего</Label>
-          <div className="font-display font-semibold text-[32px] num leading-tight mt-1">{kzt(totals.all)}</div>
-          <div className="text-[12px] text-mute mt-1 num">В Bozzihyra {kzt(totals.own)} · у партнёров {kzt(totals.partners)}</div>
+          <div className="font-display font-semibold text-[32px] num leading-tight mt-1">{money(totals.all)}</div>
+          <div className="text-[12px] text-mute mt-1 num">В Bozzihyra {money(totals.own)} · у партнёров {money(totals.partners)}</div>
         </div>
         {totals.all > 0 && (
           <div className="flex h-3 rounded-full overflow-hidden gap-0.5">
@@ -34,7 +34,7 @@ export default function Portfolio({ nav }) {
               <span className="w-2.5 h-2.5 rounded-full shrink-0" style={{ background: c.color }} />
               <span className="flex-1 text-[14px]">{c.label}</span>
               <span className="text-[12px] text-mute num w-12 text-right">{totals.all ? Math.round((c.value / totals.all) * 100) : 0}%</span>
-              <span className="text-[14px] num w-28 text-right">{kzt(c.value)}</span>
+              <span className="text-[14px] num w-28 text-right">{money(c.value)}</span>
             </div>
           ))}
         </Card>
@@ -50,7 +50,7 @@ export default function Portfolio({ nav }) {
                     <div className="text-[14px] font-medium">{a.name}</div>
                     <div className="text-[12px] text-mute num">{qty(a, state.balances[id])}</div>
                   </div>
-                  <span className="text-[14px] num">{kzt(state.balances[id] * prices[id])}</span>
+                  <span className="text-[14px] num">{money(state.balances[id] * prices[id])}</span>
                 </div>
               )
             })}

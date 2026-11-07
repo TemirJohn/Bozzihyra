@@ -9,8 +9,8 @@ import PriceChart, { useSeries } from '../components/PriceChart.jsx'
 export function AssetIcon({ asset, size = 40 }) {
   if (asset.kind === 'gold') return <span className="bz-coin rounded-full shrink-0" style={{ width: size, height: size }} />
   return (
-    <span className="rounded-full grid place-items-center text-white font-display font-semibold shrink-0"
-      style={{ width: size, height: size, background: asset.color, fontSize: size * 0.3 }}>
+    <span className="rounded-full grid place-items-center bg-vault text-white font-display font-semibold shrink-0"
+      style={{ width: size, height: size, fontSize: size * 0.3 }}>
       {asset.symbol.slice(0, asset.kind === 'crypto' ? 1 : 2)}
     </span>
   )

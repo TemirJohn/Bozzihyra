@@ -1,8 +1,9 @@
 import { useState } from 'react'
 import { Button as GButton, SegmentedControl } from 'glisse'
-import { Plus, CreditCard, Link2, Bell, ChevronRight, Sparkles, ArrowDownToLine, ArrowUpFromLine, LineChart, ShieldCheck, Snowflake } from 'lucide-react'
+import { CardFace } from './CardControls.jsx'
+import { Plus, CreditCard, Link2, Bell, ChevronRight, Sparkles, ArrowDownToLine, ArrowUpFromLine, LineChart, ShieldCheck, Eye, EyeOff, Snowflake } from 'lucide-react'
 import { useStore } from '../store.jsx'
-import { ASSETS, STOCKS, CRYPTO, PARTNERS, PRICES, CUSTODY, dayChange } from '../lib/mock.js'
+import { ASSETS, STOCKS, CRYPTO, PARTNERS, PRICES, CUSTODY, CURRENCIES, dayChange } from '../lib/mock.js'
 import { kzt, grams, qty, pct, usdt } from '../lib/format.js'
 import { Card, Label, Notice, Row, Section, Empty } from '../components/ui.jsx'
 import TxRow from '../components/TxRow.jsx'
@@ -16,7 +17,7 @@ const TABS = [
   { value: 'crypto', label: 'Крипта' },
 ]
 const START_TAB = { save: 'card', diversify: 'gold', crypto: 'crypto' }
-const CB_LABEL = { gold: 'в золоте', btc: 'в BTC', kzt: 'в тенге' }
+const CB_LABEL = { gold: 'в золоте', btc: 'в BTC', kzt: 'в золоте' }
 
 const HINTS = {
   save: 'Платите картой: 1% каждой покупки придёт в миллиграммах золота.',
@@ -25,14 +26,15 @@ const HINTS = {
 }
 
 export default function Home({ nav }) {
-  const { state, totals, unread } = useStore()
+  const { state, dispatch, totals, unread, money } = useStore()
+  const hidden = state.settings.hideBalances
   const [tab, setTab] = useState(START_TAB[state.goal] || 'card')
 
   const parts = [
     { id: 'card', value: totals.kzt, color: 'var(--fg)' },
     { id: 'gold', value: totals.gold, color: 'var(--gold-fill)' },
-    { id: 'stock', value: totals.stocks, color: '#76b043' },
-    { id: 'crypto', value: totals.crypto + totals.partners, color: '#6f7fd8' },
+    { id: 'stock', value: totals.stocks, color: 'var(--shade-1)' },
+    { id: 'crypto', value: totals.crypto + totals.partners, color: 'var(--shade-2)' },
   ]
 
   return (
@@ -42,29 +44,38 @@ export default function Home({ nav }) {
           <Wordmark />
           <div className="text-[13px] text-mute mt-0.5">Добрый день, {state.user.name}</div>
         </div>
-        <span className="relative">
+        <span className="flex items-center gap-2">
+          <GButton icon={hidden ? <EyeOff /> : <Eye />} aria-label={hidden ? 'Показать балансы' : 'Скрыть балансы'}
+            onClick={() => dispatch({ type: 'setting', key: 'hideBalances', value: !hidden })} />
+          <span className="relative">
           <GButton icon={<Bell />} aria-label={`Уведомления${unread ? `, непрочитанных: ${unread}` : ''}`} onClick={() => nav.open('notifications')} />
           {unread > 0 && (
             <span className="absolute -top-1 -right-1 min-w-5 h-5 px-1 rounded-full bg-down text-white text-[11px] font-semibold grid place-items-center num pointer-events-none">
               {unread > 9 ? '9+' : unread}
             </span>
           )}
+          </span>
         </span>
       </header>
 
       {/* Общий итог: бриф требует видеть портфель на главной */}
-      <button onClick={() => nav.open('portfolio')} className="text-left px-1">
-        <div className="flex items-center justify-between">
+      <div className="px-1">
+        <div className="flex items-center justify-between gap-2">
           <Label>Всего</Label>
-          <span className="text-[12px] text-mute flex items-center">Портфель <ChevronRight size={14} /></span>
+          <SegmentedControl className="bz-seg-cur" aria-label="Валюта отображения" items={CURRENCIES} value={state.settings.currency}
+            onValueChange={(v) => dispatch({ type: 'setting', key: 'currency', value: v })} />
         </div>
-        <div className="font-display font-semibold text-[30px] leading-tight num mt-0.5">{kzt(totals.all)}</div>
+        <button onClick={() => nav.open('portfolio')} className="w-full text-left flex items-center gap-1 mt-0.5" aria-label="Открыть весь портфель">
+          <span className="font-display font-semibold text-[30px] leading-tight num">{money(totals.all)}</span>
+          <ChevronRight size={20} className="text-mute" />
+        </button>
+        {state.settings.currency !== 'KZT' && !hidden && <div className="text-[11px] text-mute">Пересчёт для просмотра. Счета в тенге</div>}
         {totals.all > 0 && (
           <div className="flex h-1.5 rounded-full overflow-hidden gap-0.5 mt-2.5">
             {parts.filter((p) => p.value > 0).map((p) => <span key={p.id} style={{ flexGrow: p.value, background: p.color }} />)}
           </div>
         )}
-      </button>
+      </div>
 
       <div className="flex justify-center">
         <SegmentedControl className="bz-seg-full" aria-label="Балансы" items={TABS} value={tab} onValueChange={setTab} />
@@ -103,9 +114,9 @@ function Ops({ cat, nav, empty }) {
   const list = state.txs.filter((t) => t.cat === cat).slice(0, 4)
   return (
     <Section title="Операции" action={
-      <button onClick={() => nav.open('history', { filter: cat })} className="text-[13px] text-gold font-medium">Все</button>
+      <button onClick={() => nav.open('history', { filter: cat })} className="text-[13px] font-semibold underline underline-offset-2">Все</button>
     }>
-      {list.length ? <Card className="py-1">{list.map((t) => <TxRow key={t.id} t={t} />)}</Card> : <Empty>{empty}</Empty>}
+      {list.length ? <Card className="py-1">{list.map((t) => <TxRow key={t.id} t={t} onOpen={(id) => nav.open('receipt', { id })} />)}</Card> : <Empty>{empty}</Empty>}
     </Section>
   )
 }
@@ -115,17 +126,12 @@ function CardTab({ nav }) {
   const s = state.settings
   return (
     <>
-      <div className="rounded-[24px] p-5 text-white relative overflow-hidden isolate"
-        style={{ background: 'linear-gradient(135deg, #222830 0%, #14181d 60%, #3a2f17 100%)' }}>
-        <div className="bz-coin absolute -right-14 -bottom-16 w-44 h-44 rounded-full opacity-80 -z-10" />
-        <div className="flex items-center justify-between text-[12px] text-white/65">
-          <span>Баланс карты</span>
-          <span className="num">VISA •••• 2026</span>
-        </div>
-        <div className="font-display font-semibold text-[30px] num mt-1">{kzt(state.balances.kzt)}</div>
-        <div className="mt-3 inline-flex items-center gap-1.5 text-[12px] rounded-full px-2.5 py-1 bg-white/10">
+      <CardFace onClick={() => nav.open('cardPage')} />
+      <div className="flex items-center justify-between text-[12px] text-mute px-1 -mt-2">
+        <span className="flex items-center gap-1.5">
           {s.frozen ? <><Snowflake size={13} /> Заморожена</> : <><span className="w-1.5 h-1.5 rounded-full bg-up" /> Активна</>}
-        </div>
+        </span>
+        <span>Нажмите на карту: реквизиты и управление</span>
       </div>
       <Actions items={[
         { label: 'Пополнить', icon: <Plus />, onClick: () => nav.open('topup'), primary: true },
@@ -148,7 +154,7 @@ function CardTab({ nav }) {
 }
 
 function GoldTab({ nav }) {
-  const { state, totals } = useStore()
+  const { state, totals, money } = useStore()
   const g = state.balances.gold
   const nextGram = Math.max(1, Math.ceil(g + 1e-9))
   const cbGrams = state.txs.filter((t) => t.kind === 'cashback' && t.grams).reduce((s, t) => s + t.grams, 0)
@@ -159,7 +165,7 @@ function GoldTab({ nav }) {
         <div className="absolute inset-0 -z-10 bg-gradient-to-r from-vault via-vault/85 to-transparent" />
         <div className="text-[12px] text-white/65">Баланс золота · bzGOLD</div>
         <div className="font-display font-semibold text-[30px] leading-tight mt-1 num">{grams(g)}</div>
-        <div className="text-[13px] text-white/65 num">≈ {kzt(totals.gold)} по текущей котировке</div>
+        <div className="text-[13px] text-white/65 num">≈ {money(totals.gold)} по текущей котировке</div>
         <div className="mt-4">
           <div className="flex justify-between text-[12px] text-white/75 mb-1.5">
             <span>До {nextGram} г</span>
@@ -185,7 +191,7 @@ function GoldTab({ nav }) {
           <Row label="Последний аудит" value={CUSTODY.lastAudit} muted />
           <Row label="Кешбэк" value="1% от покупки → мг по текущей цене" muted />
         </Card>
-        <button onClick={() => nav.tab('gold')} className="text-[13px] text-gold font-medium flex items-center gap-1 px-1">
+        <button onClick={() => nav.tab('gold')} className="text-[13px] font-semibold flex items-center gap-1 px-1">
           <ShieldCheck size={14} /> Где хранится и как считается кешбэк <ChevronRight size={14} />
         </button>
       </Section>
@@ -194,7 +200,7 @@ function GoldTab({ nav }) {
 }
 
 function ListTab({ nav, ids, kind }) {
-  const { state, prices, totals } = useStore()
+  const { state, prices, totals, money } = useStore()
   const isCrypto = kind === 'crypto'
   const own = isCrypto ? totals.crypto : totals.stocks
   const connected = PARTNERS.filter((p) => state.partners[p.id])
@@ -202,9 +208,9 @@ function ListTab({ nav, ids, kind }) {
     <>
       <Card>
         <Label>{isCrypto ? 'Баланс крипты' : 'Баланс акций'}</Label>
-        <div className="font-display font-semibold text-[28px] num mt-1">{kzt(own + (isCrypto ? totals.partners : 0))}</div>
+        <div className="font-display font-semibold text-[28px] num mt-1">{money(own + (isCrypto ? totals.partners : 0))}</div>
         {isCrypto && totals.partners > 0 && (
-          <div className="text-[12px] text-mute mt-1 num">В Bozzihyra {kzt(own)} · на биржах {kzt(totals.partners)}</div>
+          <div className="text-[12px] text-mute mt-1 num">В Bozzihyra {money(own)} · на биржах {money(totals.partners)}</div>
         )}
         {!isCrypto && <div className="text-[12px] text-mute mt-1">Токенизированные акции, дробные доли от 1 000 ₸</div>}
       </Card>
@@ -224,7 +230,7 @@ function ListTab({ nav, ids, kind }) {
                   <div className="text-[12px] text-mute num truncate">{held > 0 ? qty(a, held) : a.symbol} · {kzt(prices[id])}</div>
                 </div>
                 <div className="text-right shrink-0">
-                  <div className="text-[14px] num font-medium">{held > 0 ? kzt(held * prices[id]) : 'Купить'}</div>
+                  <div className="text-[14px] num font-medium">{held > 0 ? money(held * prices[id]) : 'Купить'}</div>
                   <div className={`text-[12px] num ${ch >= 0 ? 'text-up' : 'text-down'}`}>{pct(ch)} за день</div>
                 </div>
               </button>
@@ -235,7 +241,7 @@ function ListTab({ nav, ids, kind }) {
 
       {isCrypto && (
         <Section title="На биржах-партнёрах" action={
-          <button onClick={() => nav.tab('partners')} className="text-[13px] text-gold font-medium">Управлять</button>
+          <button onClick={() => nav.tab('partners')} className="text-[13px] font-semibold underline underline-offset-2">Управлять</button>
         }>
           {connected.length ? (
             <Card className="py-1">

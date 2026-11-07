@@ -5,6 +5,7 @@ import { useStore } from '../store.jsx'
 import { ASSETS, FEES } from '../lib/mock.js'
 import { kzt, qtyExact } from '../lib/format.js'
 import { Button, Panel, Card, Row, Notice, Disclaimer, Chip } from '../components/ui.jsx'
+import { BioGate } from '../components/Security.jsx'
 
 function makeQuote(asset, mode, input, market) {
   const s = asset.spread
@@ -41,6 +42,7 @@ export default function Trade({ asset: assetId = 'gold', mode, nav }) {
   const [quote, setQuote] = useState(null)
   const [left, setLeft] = useState(FEES.quoteTtl)
   const [agree, setAgree] = useState(false)
+  const [gate, setGate] = useState(false)
 
   const value = Number(String(raw).replace(',', '.').replace(/\s/g, '')) || 0
   const bal = isBuy ? state.balances.kzt : state.balances[assetId]
@@ -134,7 +136,7 @@ export default function Trade({ asset: assetId = 'gold', mode, nav }) {
         footer={expired ? (
           <Button onClick={getQuote}><RefreshCw size={18} /> Обновить котировку</Button>
         ) : (
-          <Button disabled={!agree} onClick={confirm}>
+          <Button disabled={!agree} onClick={() => (state.settings.confirmOps && quote.kzt >= 100000 ? setGate(true) : confirm())}>
             {isBuy ? `Купить за ${kzt(quote.kzt)}` : `Продать ${qtyExact(asset, quote.qty)}`}
           </Button>
         )}>
@@ -188,8 +190,13 @@ export default function Trade({ asset: assetId = 'gold', mode, nav }) {
             <span id="agree-label" className="flex-1 text-[13px] leading-snug">{RISK[asset.kind]}</span>
             <Switch id="agree" aria-labelledby="agree-label" checked={agree} onCheckedChange={setAgree} />
           </div>
+          {state.settings.confirmOps && quote.kzt >= 100000 && (
+            <p className="text-[12px] text-mute px-1">Сумма от 100 000 ₸: подтвердим операцию Face ID.</p>
+          )}
           <Disclaimer>{asset.about} Хранение кастодиальное. Продать можно в любое время по текущей котировке.</Disclaimer>
         </div>
+        {gate && <BioGate reason={`${isBuy ? 'Купить' : 'Продать'} ${name} на ${kzt(quote.kzt)}`} onCancel={() => setGate(false)}
+          onSuccess={() => { setGate(false); confirm() }} />}
       </Panel>
     )
   }
@@ -210,8 +217,7 @@ export default function Trade({ asset: assetId = 'gold', mode, nav }) {
     <Panel title="" onClose={nav.close}
       footer={<Button onClick={() => { nav.close(); nav.tab('home') }}>На главную</Button>}>
       <div className="flex flex-col items-center text-center pt-10">
-        <div className={`anim-pop w-24 h-24 rounded-full grid place-items-center ${asset.kind === 'gold' ? 'bz-coin' : ''}`}
-          style={asset.kind === 'gold' ? undefined : { background: asset.color }}>
+        <div className={`anim-pop w-24 h-24 rounded-full grid place-items-center ${asset.kind === 'gold' ? 'bz-coin' : 'bg-vault'}`}>
           <CheckCircle2 size={40} className="text-white" />
         </div>
         <div className="mt-6 text-[14px] text-mute">{isBuy ? 'Актив на вашем счёте' : 'Деньги на балансе'}</div>

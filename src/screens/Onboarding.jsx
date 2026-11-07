@@ -66,7 +66,7 @@ export function Wordmark({ light }) {
 
 function Tick({ on }) {
   return (
-    <span className={`shrink-0 w-6 h-6 rounded-full grid place-items-center ${on ? 'bg-gold-fill text-on-gold' : 'border border-line'}`}>
+    <span className={`shrink-0 w-6 h-6 rounded-full grid place-items-center ${on ? 'bg-ink text-paper' : 'border border-line'}`}>
       {on && <Check size={14} strokeWidth={3} />}
     </span>
   )
@@ -87,10 +87,10 @@ export default function Onboarding() {
     const s = SLIDES[step]
     const Icon = s.icon
     return (
-      <div className="flex-1 flex flex-col bg-vault/92 text-white px-6 pt-[max(24px,env(safe-area-inset-top))] pb-[max(24px,env(safe-area-inset-bottom))]">
+      <div className="flex-1 flex flex-col bg-paper text-ink px-6 pt-[max(24px,env(safe-area-inset-top))] pb-[max(24px,env(safe-area-inset-bottom))]">
         <div className="flex items-center justify-between">
-          <Wordmark light />
-          <button onClick={() => setStep(3)} className="text-[13px] text-white/60">Пропустить</button>
+          <Wordmark />
+          <button onClick={() => setStep(3)} className="text-[13px] text-mute">Пропустить</button>
         </div>
         <div key={step} className="flex-1 flex flex-col justify-center anim-rise">
           <div className="relative mx-auto mb-10 w-52 h-52">
@@ -98,16 +98,16 @@ export default function Onboarding() {
             <Glass className="bz-glass-strong absolute inset-x-6 top-1/2 -translate-y-1/2 rounded-full py-3 text-center" data-theme="dark">
               <span className="font-display font-semibold text-[22px] text-white">{s.visual}</span>
             </Glass>
-            <div className="absolute -bottom-3 left-1/2 -translate-x-1/2 bg-white/12 backdrop-blur rounded-full w-11 h-11 grid place-items-center">
+            <div className="absolute -bottom-3 left-1/2 -translate-x-1/2 bg-ink text-paper rounded-full w-11 h-11 grid place-items-center">
               <Icon size={20} />
             </div>
           </div>
           <h1 className="font-display font-semibold text-[26px] leading-[1.15] text-balance">{s.title}</h1>
-          <p className="mt-3 text-[15px] leading-relaxed text-white/70">{s.text}</p>
+          <p className="mt-3 text-[15px] leading-relaxed text-mute">{s.text}</p>
         </div>
         <div className="flex gap-1.5 mb-5">
           {SLIDES.map((_, i) => (
-            <span key={i} className={`h-1 rounded-full transition-all ${i === step ? 'w-8 bg-gold-fill' : 'w-3 bg-white/25'}`} />
+            <span key={i} className={`h-1 rounded-full transition-all ${i === step ? 'w-8 bg-ink' : 'w-3 bg-ink/20'}`} />
           ))}
         </div>
         <Button onClick={next}>{step < 2 ? 'Далее' : 'Начать'}</Button>

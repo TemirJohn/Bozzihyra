@@ -1,63 +1,65 @@
 @import "tailwindcss";
 
-/* Bozzihyra: solid cards on a quiet stone ground; liquid glass only on the floating layer.
-   One accent: gold. Display = Unbounded (balances, headings), body = Onest, figures = JetBrains Mono. */
+/* Bozzihyra: monochrome — black, white and greys; gold appears only on gold itself (coin, chart, grams).
+   Display = Unbounded (balances, headings), body = Onest, figures = JetBrains Mono. */
 :root {
-  --bg: #e8ebe5;
-  --fg: #12161b;
-  --mute: #5c635b;
-  --line: rgb(18 22 27 / 0.1);
+  --bg: #f2f2f2;
+  --fg: #0a0a0a;
+  --mute: #6b6b6b;
+  --line: rgb(0 0 0 / 0.08);
   --card: #ffffff;
-  --vault: #14181d;
+  --vault: #0a0a0a;
   --gold: #9c721c;
   --gold-fill: #d9aa45;
   --on-gold: #1c1407;
-  --gold-soft: rgb(217 170 69 / 0.22);
+  --gold-soft: rgb(217 170 69 / 0.2);
   --up: #1b7549;
-  --down: #b3362e;
+  --down: #c4342b;
   --warn: #9a610e;
-  --chart-grid: rgb(18 22 27 / 0.1);
-  --chart-text: #5c635b;
+  --shade-1: #8e8e93;
+  --shade-2: #c7c7cc;
+  --shade-3: #e0e0e3;
 
-  /* glisse: gold accent for filled buttons, tab selection and switches */
-  --lg-fill: #d9aa45;
-  --lg-on: #d9aa45;
+  /* glisse: filled buttons and the selected tab follow the ink colour; switches keep iOS green */
+  --lg-fill: var(--fg);
 }
 
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
     color-scheme: dark;
-    --bg: #0c0f12;
-    --fg: #eff1ec;
-    --mute: #9aa198;
-    --line: rgb(255 255 255 / 0.1);
-    --card: #171b21;
-    --vault: #1a1f26;
+    --bg: #000000;
+    --fg: #f5f5f5;
+    --mute: #9a9a9a;
+    --line: rgb(255 255 255 / 0.09);
+    --card: #141414;
+    --vault: #1c1c1e;
     --gold: #e6bd62;
-    --gold-soft: rgb(230 189 98 / 0.16);
+    --gold-soft: rgb(230 189 98 / 0.15);
     --up: #52c690;
     --down: #ff6d60;
     --warn: #e9a640;
-    --chart-grid: rgb(255 255 255 / 0.1);
-    --chart-text: #9aa198;
+    --shade-1: #8e8e93;
+    --shade-2: #48484a;
+    --shade-3: #2c2c2e;
   }
 }
 
 :root[data-theme="dark"] {
   color-scheme: dark;
-  --bg: #0c0f12;
-  --fg: #eff1ec;
-  --mute: #9aa198;
-  --line: rgb(255 255 255 / 0.1);
-  --card: #171b21;
-  --vault: #1a1f26;
+  --bg: #000000;
+  --fg: #f5f5f5;
+  --mute: #9a9a9a;
+  --line: rgb(255 255 255 / 0.09);
+  --card: #141414;
+  --vault: #1c1c1e;
   --gold: #e6bd62;
-  --gold-soft: rgb(230 189 98 / 0.16);
+  --gold-soft: rgb(230 189 98 / 0.15);
   --up: #52c690;
   --down: #ff6d60;
   --warn: #e9a640;
-  --chart-grid: rgb(255 255 255 / 0.1);
-  --chart-text: #9aa198;
+  --shade-1: #8e8e93;
+  --shade-2: #48484a;
+  --shade-3: #2c2c2e;
 }
 
 @theme inline {
@@ -71,6 +73,8 @@
   --color-gold-fill: var(--gold-fill);
   --color-on-gold: var(--on-gold);
   --color-gold-2: #e9c475;
+  --color-shade-1: var(--shade-1);
+  --color-shade-2: var(--shade-2);
   --color-gold-soft: var(--gold-soft);
   --color-up: var(--up);
   --color-down: var(--down);
@@ -87,7 +91,7 @@ body { margin: 0; background: var(--bg); color: var(--fg); font-family: var(--fo
 .no-scrollbar { scrollbar-width: none; }
 button { cursor: pointer; }
 button:disabled { cursor: not-allowed; }
-:focus-visible { outline: 2px solid var(--gold-fill); outline-offset: 2px; }
+:focus-visible { outline: 2px solid var(--fg); outline-offset: 2px; }
 
 /* Plain ground: glass is reserved for the floating layer (tab bar, buttons, banners) */
 .bz-wall { background: var(--bg); }
@@ -96,7 +100,7 @@ button:disabled { cursor: not-allowed; }
 /* glisse overrides. Unlayered, so they sit beside the library's own unlayered rules. */
 .lg-button.bz-cta { width: 100%; height: 52px; border-radius: 26px; font-size: 15px; font-weight: 600; }
 .lg-button.bz-sm { height: 36px; border-radius: 18px; padding: 0 14px; font-size: 13px; font-weight: 600; }
-.lg-button[data-variant="filled"]:not([data-destructive]) { color: var(--on-gold); }
+.lg-button[data-variant="filled"]:not([data-destructive]) { color: var(--bg); }
 .lg-tab-bar.bz-tabs[data-icons] { --lg-tab-width: 66px; --lg-tab-height: 54px; }
 .lg-segmented.bz-seg { --lg-tab-width: 74px; }
 /* Ширина сегментов от ширины экрана (телефонная рамка 390px, поля по 16px) */
@@ -105,6 +109,22 @@ button:disabled { cursor: not-allowed; }
 .lg-segmented.bz-seg-5 { --lg-tab-width: calc((min(100vw, 390px) - 32px) / 5); font-size: 13px; }
 .lg-segmented.bz-seg-3 { --lg-tab-width: calc((min(100vw, 390px) - 32px - 32px - 48px) / 3); font-size: 13px; }
 .lg-slider { max-width: none; width: 100%; }
+.lg-segmented.bz-seg-cur { --lg-tab-width: 38px; --lg-tab-height: 26px; font-size: 12px; }
+
+/* Card flip */
+.bz-flip { perspective: 1200px; }
+.bz-flip-inner { position: relative; transition: transform .6s cubic-bezier(.2,.8,.2,1); transform-style: preserve-3d; }
+.bz-flip-inner.is-flipped { transform: rotateY(180deg); }
+.bz-face { backface-visibility: hidden; -webkit-backface-visibility: hidden; }
+.bz-back { position: absolute; inset: 0; transform: rotateY(180deg); }
+
+/* Receipt zigzag edge */
+.bz-receipt { --z: 10px; -webkit-mask: conic-gradient(from -45deg at bottom, #0000, #000 1deg 89deg, #0000 90deg) 50% / calc(2 * var(--z)) 100%; mask: conic-gradient(from -45deg at bottom, #0000, #000 1deg 89deg, #0000 90deg) 50% / calc(2 * var(--z)) 100%; padding-bottom: calc(16px + var(--z)); }
+
+@keyframes shake { 0%,100% { transform: none } 20%,60% { transform: translateX(-8px) } 40%,80% { transform: translateX(8px) } }
+.anim-shake { animation: shake .4s ease both; }
+@keyframes scan { 0%,100% { transform: scale(1); opacity: .9 } 50% { transform: scale(1.08); opacity: 1 } }
+.anim-scan { animation: scan 1s ease-in-out infinite; }
 .lg-glass.bz-glass-strong { --lg-blur: 18px; --lg-glass: color-mix(in srgb, var(--card) 72%, transparent); }
 
 @layer components {
@@ -117,4 +137,4 @@ button:disabled { cursor: not-allowed; }
 .anim-rise { animation: rise .35s ease-out both; }
 .anim-pop { animation: pop .5s ease-out both; }
 .anim-slide { animation: slideUp .3s cubic-bezier(.2,.8,.2,1) both; }
-@media (prefers-reduced-motion: reduce) { .anim-rise, .anim-pop, .anim-slide { animation: none; } }
+@media (prefers-reduced-motion: reduce) { .anim-rise, .anim-pop, .anim-slide, .anim-shake, .anim-scan { animation: none; } .bz-flip-inner { transition: none; } }

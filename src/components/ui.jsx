@@ -56,7 +56,7 @@ export function Choice({ selected, onClick, children, className = '' }) {
   return (
     <div role="button" tabIndex={0} aria-pressed={selected} onClick={onClick}
       onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onClick() } }}
-      className={`bz-card text-left cursor-pointer transition outline-offset-2 ${selected ? 'ring-2 ring-gold-fill' : ''} ${className}`}>
+      className={`bz-card text-left cursor-pointer transition outline-offset-2 ${selected ? 'ring-2 ring-ink' : ''} ${className}`}>
       {children}
     </div>
   )

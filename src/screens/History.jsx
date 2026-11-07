@@ -47,7 +47,7 @@ export default function History({ filter: initial = 'all', nav }) {
         {groups.length === 0 ? <Empty>В этой категории пока нет операций</Empty> : groups.map((g) => (
           <section key={g.label} className="flex flex-col gap-2">
             <div className="text-[13px] text-mute font-medium px-1">{g.label}</div>
-            <Card className="py-1">{g.items.map((t) => <TxRow key={t.id} t={t} />)}</Card>
+            <Card className="py-1">{g.items.map((t) => <TxRow key={t.id} t={t} onOpen={(id) => nav.open('receipt', { id, back: { type: 'history', filter } })} />)}</Card>
           </section>
         ))}
       </div>

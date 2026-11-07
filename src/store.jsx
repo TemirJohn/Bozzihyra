@@ -1,5 +1,5 @@
 import { createContext, useContext, useEffect, useReducer, useState } from 'react'
-import { ASSETS, FEES, PARTNERS, PRICES, CRYPTO, STOCKS, dayChange } from './lib/mock.js'
+import { ASSETS, FEES, PARTNERS, PRICES, CRYPTO, STOCKS, RATES, DEVICES, dayChange } from './lib/mock.js'
 import { kzt, qty, qtyExact, pct } from './lib/format.js'
 
 const KEY = 'bozzihyra-demo-v2'
@@ -7,8 +7,18 @@ const KEY = 'bozzihyra-demo-v2'
 export const DEFAULT_SETTINGS = {
   // Банк
   frozen: false,          // карта заморожена
+  freezeReason: null,     // lost | suspicious | temp
+  cardLast4: '2026',
   online: true,           // оплата в интернете
+  subs: true,             // подписки и автосписания
+  foreign: true,          // покупки на зарубежных сайтах
   dailyLimit: 300000,     // лимит покупок в день, ₸
+  onlineLimit: 150000,    // лимит онлайн-покупок в день, ₸
+  cashLimit: 200000,      // лимит снятия наличных в день, ₸
+  confirmOps: true,       // подтверждать крупные операции Face ID
+  pin: '1234',            // тестовый код входа
+  hideBalances: false,    // скрывать суммы на главной
+  currency: 'KZT',        // валюта отображения портфеля
   push: true,             // всплывающие уведомления
   biometrics: true,       // вход по Face ID
   theme: 'system',        // system | light | dark
@@ -28,6 +38,7 @@ const initial = {
   partners: {},
   txs: [],
   notifications: [],
+  devices: DEVICES,
   settings: DEFAULT_SETTINGS,
   events: {},
   sessions: 0,
@@ -53,10 +64,11 @@ function demoState() {
     partners: { bybit: { balances: { USDT: 860, BTC: 0.0031 } } },
     txs: [
       t(2, { kind: 'cashback', cat: 'gold', title: 'Кешбэк · Coffee Boom', grams: 15 / PRICES.gold, cashbackKzt: 15 }),
-      t(2, { kind: 'pay', cat: 'card', title: 'Coffee Boom', sub: 'Кофейня', kzt: -1500 }),
+      t(2, { kind: 'pay', cat: 'card', title: 'Coffee Boom', sub: 'Кофейня', kzt: -1500, mcc: '5814', last4: '2026' }),
       t(26, { kind: 'cashback', cat: 'gold', title: 'Кешбэк · Magnum', grams: 84.2 / PRICES.gold, cashbackKzt: 84.2 }),
-      t(26, { kind: 'pay', cat: 'card', title: 'Magnum', sub: 'Супермаркет', kzt: -8420 }),
-      t(30, { kind: 'buy', cat: 'stock', asset: 'nvda', title: 'Покупка NVIDIA', kzt: -34700, qty: 0.35, fee: 100 }),
+      t(26, { kind: 'pay', cat: 'card', title: 'Magnum', sub: 'Супермаркет', kzt: -8420, mcc: '5411', last4: '2026' }),
+      t(20, { kind: 'sell', cat: 'stock', asset: 'nvda', title: 'Продажа NVIDIA', kzt: 14650, qty: -0.15, price: 98500, fee: 100 }),
+      t(30, { kind: 'buy', cat: 'stock', asset: 'nvda', title: 'Покупка NVIDIA', kzt: -46100, qty: 0.5, price: 92000, fee: 100 }),
       t(31, { kind: 'buy', cat: 'stock', asset: 'aapl', title: 'Покупка Apple', kzt: -16300, qty: 0.12, fee: 100 }),
       t(40, { kind: 'buy', cat: 'crypto', asset: 'eth', title: 'Покупка Ethereum', kzt: -92000, qty: 0.05, fee: 184 }),
       t(41, { kind: 'buy', cat: 'crypto', asset: 'btc', title: 'Покупка Bitcoin', kzt: -111300, qty: 0.0021, fee: 223 }),
@@ -69,7 +81,7 @@ function demoState() {
       n(26, 'cashback', 'Оплата 8 420 ₸ · Magnum', 'Кешбэк +1,26 мг золота'),
       n(48, 'partner', 'Bybit KZ подключена', 'Балансы видны на главной во вкладке «Крипта».'),
     ],
-    events: { app_open: 4, onboarding_done: 1, topup: 1, gold_buy: 1, asset_buy: 4, card_payment: 2, partner_connected: 1, cashback_gold: 1 },
+    events: { app_open: 4, onboarding_done: 1, topup: 1, gold_buy: 1, asset_buy: 4, asset_sell: 1, card_payment: 2, partner_connected: 1, cashback_gold: 1 },
   }
 }
 
@@ -84,7 +96,7 @@ function load() {
     const raw = localStorage.getItem(KEY)
     if (raw) {
       const s = JSON.parse(raw)
-      return { ...initial, ...s, settings: { ...DEFAULT_SETTINGS, ...s.settings }, balances: { ...initial.balances, ...s.balances } }
+      return { ...initial, ...s, cashback: s.cashback === 'kzt' ? 'gold' : s.cashback, settings: { ...DEFAULT_SETTINGS, ...s.settings }, balances: { ...initial.balances, ...s.balances } }
     }
   } catch { /* ignore */ }
   return initial
@@ -154,7 +166,7 @@ function reducer(s, a) {
         ...next, balances,
         txs: [
           tx({ kind: 'cashback', cat: cbCat, title: `Кешбэк · ${a.merchant}`, ...reward, cashbackKzt: cb }),
-          tx({ kind: 'pay', cat: 'card', title: a.merchant, sub: a.cat, kzt: -a.amount }),
+          tx({ kind: 'pay', cat: 'card', title: a.merchant, sub: a.cat, kzt: -a.amount, mcc: a.mcc, last4: s.settings.cardLast4 }),
           ...next.txs,
         ],
         events: bump(s.events, 'card_payment'),
@@ -194,6 +206,24 @@ function reducer(s, a) {
     }
     case 'setting':
       return { ...s, settings: { ...s.settings, [a.key]: a.value } }
+    case 'settings':
+      return { ...s, settings: { ...s.settings, ...a.patch } }
+    case 'notify':
+      return withNote(s, note(a.kind || 'info', a.title, a.text))
+    case 'deleteNote':
+      return { ...s, notifications: s.notifications.filter((n) => n.id !== a.id) }
+    case 'clearNotes':
+      return { ...s, notifications: [] }
+    case 'endSession': {
+      const d = s.devices.find((x) => x.id === a.id)
+      return withNote({ ...s, devices: s.devices.filter((x) => x.id !== a.id) },
+        note('info', 'Сеанс завершён', `${d.name} больше не имеет доступа к аккаунту.`))
+    }
+    case 'reissueCard': {
+      const last4 = String(1000 + Math.floor(Math.random() * 9000))
+      return withNote({ ...s, settings: { ...s.settings, frozen: false, freezeReason: null, cardLast4: last4 } },
+        note('info', 'Карта перевыпущена', `Старая карта заблокирована навсегда. Новая виртуальная карта •••• ${last4} уже работает.`))
+    }
     case 'readAll':
       return { ...s, notifications: s.notifications.map((n) => ({ ...n, read: true })) }
     case 'reset':
@@ -260,8 +290,17 @@ export function StoreProvider({ children }) {
 
   const unread = state.notifications.filter((n) => !n.read).length
 
+  // Суммы в валюте отображения; при «скрыть балансы» вместо цифр точки
+  const cur = state.settings.currency
+  const money = (n, { raw = false } = {}) => {
+    if (state.settings.hideBalances && !raw) return '••••••'
+    if (cur === 'KZT') return kzt(n)
+    const v = n / RATES[cur]
+    return `${v.toLocaleString('ru-RU', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} ${cur === 'USD' ? '$' : '€'}`
+  }
+
   return (
-    <Ctx.Provider value={{ state, dispatch, prices, goldPrice: prices.gold, totals, unread }}>
+    <Ctx.Provider value={{ state, dispatch, prices, goldPrice: prices.gold, totals, unread, money }}>
       {children}
     </Ctx.Provider>
   )
