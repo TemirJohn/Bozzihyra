@@ -7,6 +7,7 @@ import { kzt } from '../lib/format.js'
 import { Panel, Card, Button, Notice, Choice, Section, Row, Label } from '../components/ui.jsx'
 import { BioGate } from '../components/Security.jsx'
 import TxRow from '../components/TxRow.jsx'
+import ToonGold from '../components/ToonGold.jsx'
 
 const backTo = (nav, back) => (back ? () => nav.open(back.type, back) : undefined)
 
@@ -18,7 +19,7 @@ export function CardFace({ onClick, compact }) {
     <button onClick={onClick} aria-label="Открыть карту: реквизиты и управление"
       className={`w-full aspect-[1.586] rounded-[22px] p-5 text-white flex flex-col justify-between text-left relative overflow-hidden isolate ${compact ? '' : ''}`}
       style={{ background: 'linear-gradient(135deg, #2a2a2c 0%, #0a0a0a 65%, #1c1c1e 100%)' }}>
-      <div className={`bz-coin absolute -right-16 -bottom-20 w-56 h-56 rounded-full -z-10 ${s.frozen ? 'opacity-25 grayscale' : 'opacity-80'}`} />
+      <div className={`absolute -right-10 top-1/2 -translate-y-[58%] -z-10 ${s.frozen ? 'opacity-25 grayscale' : ''}`}><ToonGold model="coin" live={false} size={170} sparkle={!s.frozen} /></div>
       <div className="flex justify-between items-start">
         <span className="font-display font-semibold text-[17px]">bozzihyra<span className="text-gold-fill">.</span></span>
         {s.frozen ? <Snowflake size={20} className="text-sky-200" /> : <Wifi size={20} className="rotate-90 text-white/70" />}

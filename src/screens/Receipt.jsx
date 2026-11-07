@@ -5,6 +5,7 @@ import { ASSETS } from '../lib/mock.js'
 import { kzt, qtyExact, btc } from '../lib/format.js'
 import { download } from '../lib/download.js'
 import { Panel, Button, Notice, Choice } from '../components/ui.jsx'
+import GoldBar from '../components/GoldBar.jsx'
 
 const KIND = {
   pay: 'Покупка картой', cashback: 'Начисление кешбэка', buy: 'Покупка актива', sell: 'Продажа актива',
@@ -102,7 +103,9 @@ export default function Receipt({ id, back, nav }) {
           <div className="flex flex-col items-center text-center pt-2 pb-4 border-b border-dashed border-line">
             {asset && asset.kind !== 'gold'
               ? <span className="w-12 h-12 rounded-full bg-vault text-white grid place-items-center font-display font-semibold text-[14px]">{asset.symbol.slice(0, 2)}</span>
-              : <span className={`w-12 h-12 rounded-full ${t.cat === 'gold' ? 'bz-coin' : 'bg-ink text-paper grid place-items-center font-display font-semibold'}`}>{t.cat === 'gold' ? '' : t.title[0]}</span>}
+              : t.cat === 'gold'
+                ? <GoldBar live={false} size={56} className="-my-1" />
+                : <span className="w-12 h-12 rounded-full bg-ink text-paper grid place-items-center font-display font-semibold">{t.title[0]}</span>}
             <div className="text-[13px] text-mute mt-3">{KIND[t.kind]}</div>
             <div className="font-display font-semibold text-[26px] num mt-0.5">{amount}</div>
             <div className="text-[13px] mt-1 flex items-center gap-1.5 text-up"><CheckCircle2 size={14} /> Проведена</div>

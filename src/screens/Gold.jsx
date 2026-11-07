@@ -6,6 +6,7 @@ import { ASSETS, CUSTODY, FEES } from '../lib/mock.js'
 import { kzt, grams, pct } from '../lib/format.js'
 import { Button, Card, Label, Row, Disclaimer, Section } from '../components/ui.jsx'
 import PriceChart, { useSeries } from '../components/PriceChart.jsx'
+import GoldBar from '../components/GoldBar.jsx'
 
 const VIEWS = [
   { value: 'price', label: 'Цена' },
@@ -17,7 +18,7 @@ export default function Gold({ nav }) {
   return (
     <div className="px-4 pt-[max(16px,env(safe-area-inset-top))] pb-6 flex flex-col gap-4">
       <header className="flex items-center gap-2.5 px-1">
-        <span className="bz-coin w-9 h-9 rounded-full" />
+        <GoldBar live={false} size={40} />
         <div className="flex-1">
           <div className="font-semibold text-[16px] leading-tight">Золото bzGOLD</div>
           <div className="text-[12px] text-mute">1 токен = 1 г золота 999,9</div>
@@ -45,13 +46,16 @@ function PriceView({ nav, onAbout }) {
 
   return (
     <>
-      <div className="px-1">
+      <div className="px-1 flex items-center gap-2">
+        <div className="flex-1 min-w-0">
         <div className="font-display font-semibold text-[30px] num leading-tight">{kzt(goldPrice)}</div>
         <div className={`flex flex-wrap items-center gap-x-1.5 text-[14px] font-medium num ${up ? 'text-up' : 'text-down'}`}>
           {up ? <TrendingUp size={16} /> : <TrendingDown size={16} />}
           {pct(change)} за {r.long}
           <span className="text-mute font-normal">· тестовая котировка за 1 г</span>
         </div>
+        </div>
+        <GoldBar size={120} className="-my-4 -mr-2 shrink-0" />
       </div>
 
       <PriceChart data={data} color="#d9aa45" unit="1 г" range={range} onRange={setRange} />

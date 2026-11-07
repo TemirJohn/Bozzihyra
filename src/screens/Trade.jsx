@@ -6,6 +6,7 @@ import { ASSETS, FEES } from '../lib/mock.js'
 import { kzt, qtyExact } from '../lib/format.js'
 import { Button, Panel, Card, Row, Notice, Disclaimer, Chip } from '../components/ui.jsx'
 import { BioGate } from '../components/Security.jsx'
+import GoldBar from '../components/GoldBar.jsx'
 
 function makeQuote(asset, mode, input, market) {
   const s = asset.spread
@@ -217,9 +218,16 @@ export default function Trade({ asset: assetId = 'gold', mode, nav }) {
     <Panel title="" onClose={nav.close}
       footer={<Button onClick={() => { nav.close(); nav.tab('home') }}>На главную</Button>}>
       <div className="flex flex-col items-center text-center pt-10">
-        <div className={`anim-pop w-24 h-24 rounded-full grid place-items-center ${asset.kind === 'gold' ? 'bz-coin' : 'bg-vault'}`}>
-          <CheckCircle2 size={40} className="text-white" />
-        </div>
+        {asset.kind === 'gold' ? (
+          <div className="relative">
+            <GoldBar size={170} label="Купленное золото" />
+            <CheckCircle2 size={30} className="absolute right-3 bottom-6 text-up bg-paper rounded-full anim-pop" />
+          </div>
+        ) : (
+          <div className="anim-pop w-24 h-24 rounded-full grid place-items-center bg-vault">
+            <CheckCircle2 size={40} className="text-white" />
+          </div>
+        )}
         <div className="mt-6 text-[14px] text-mute">{isBuy ? 'Актив на вашем счёте' : 'Деньги на балансе'}</div>
         <div className="font-display font-semibold text-[26px] num mt-1">
           {isBuy ? `+${qtyExact(asset, quote.qty)}` : `+${kzt(quote.kzt)}`}

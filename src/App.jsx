@@ -21,6 +21,7 @@ import Assistant from './screens/Assistant.jsx'
 import { CardPage, FreezePage, OnlinePage, LimitsPage } from './screens/CardControls.jsx'
 import { SecurityPage, DocumentsPage, TaxesPage } from './screens/ProfilePages.jsx'
 import { LockScreen } from './components/Security.jsx'
+import Guest, { SignupPrompt } from './screens/Guest.jsx'
 
 const TABS = [
   { value: 'home', label: 'Главная', icon: <HomeIcon /> },
@@ -35,7 +36,7 @@ const MODALS = {
   trade: Trade, topup: TopUp, cashback: Cashback, asset: AssetPanel, notifications: Notifications,
   history: History, portfolio: Portfolio, jury: Jury, receipt: Receipt,
   cardPage: CardPage, freeze: FreezePage, online: OnlinePage, limits: LimitsPage,
-  security: SecurityPage, documents: DocumentsPage, taxes: TaxesPage, assistant: Assistant,
+  security: SecurityPage, documents: DocumentsPage, taxes: TaxesPage, assistant: Assistant, signupPrompt: SignupPrompt,
 }
 
 const urlFlag = (name) => {
@@ -43,18 +44,20 @@ const urlFlag = (name) => {
 }
 
 export default function App() {
-  const { state } = useStore()
+  const { state, dispatch } = useStore()
   const [tab, setTab] = useState('home')
   const [modal, setModal] = useState(() => (urlFlag('jury') ? { type: 'jury' } : null))
   // Экран входа при открытии (кроме режима жюри, чтобы сразу показывать метрики)
   const [locked, setLocked] = useState(() => state.onboarded && !urlFlag('jury'))
   const [banner, setBanner] = useState(null)
+  const [signingUp, setSigningUp] = useState(false)
 
   const nav = {
     tab: (t) => { setModal(null); setTab(t) },
     open: (type, props = {}) => setModal({ type, ...props }),
     close: () => setModal(null),
     lock: () => setLocked(true),
+    signup: () => { setModal(null); setSigningUp(true); dispatch({ type: 'track', name: 'guest_signup_start' }) },
   }
 
   // Новое уведомление → баннер (если push включены и центр уведомлений не открыт)
@@ -89,8 +92,13 @@ export default function App() {
   return (
     <div className="h-full w-full flex items-center justify-center sm:p-6 bz-wall">
       <div id="phone" className="relative isolate h-full w-full overflow-hidden bg-paper sm:h-[844px] sm:max-h-full sm:w-[390px] sm:rounded-[48px] sm:shadow-[0_30px_80px_-20px_rgba(0,0,0,.35)] sm:ring-[10px] sm:ring-[#0a0a0a] flex flex-col">
-        {!state.onboarded ? (
-          <Onboarding />
+        {!state.onboarded && state.guest && !signingUp ? (
+          <>
+            <main className="flex-1 overflow-y-auto no-scrollbar anim-rise"><Guest nav={nav} /></main>
+            {Modal && <Modal key={modalKey} {...modal} nav={nav} />}
+          </>
+        ) : !state.onboarded ? (
+          <Onboarding start={signingUp ? 't0' : 'welcome'} onGuest={() => setSigningUp(false)} />
         ) : (
           <>
             <main key={tab} className="flex-1 overflow-y-auto no-scrollbar anim-rise pb-28">

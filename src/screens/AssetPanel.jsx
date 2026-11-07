@@ -1,13 +1,14 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { TrendingUp, TrendingDown, Info } from 'lucide-react'
 import { useStore } from '../store.jsx'
 import { ASSETS } from '../lib/mock.js'
 import { kzt, pct, qtyExact } from '../lib/format.js'
 import { Panel, Card, Button, Label, Row, Disclaimer } from '../components/ui.jsx'
 import PriceChart, { useSeries } from '../components/PriceChart.jsx'
+import GoldBar from '../components/GoldBar.jsx'
 
 export function AssetIcon({ asset, size = 40 }) {
-  if (asset.kind === 'gold') return <span className="bz-coin rounded-full shrink-0" style={{ width: size, height: size }} />
+  if (asset.kind === 'gold') return <GoldBar live={false} size={size} className="shrink-0" />
   return (
     <span className="rounded-full grid place-items-center bg-vault text-white font-display font-semibold shrink-0"
       style={{ width: size, height: size, fontSize: size * 0.3 }}>
@@ -17,8 +18,10 @@ export function AssetIcon({ asset, size = 40 }) {
 }
 
 export default function AssetPanel({ id, nav }) {
-  const { state, prices } = useStore()
+  const { state, prices, dispatch } = useStore()
   const asset = ASSETS[id]
+  const guest = !state.onboarded
+  useEffect(() => { if (guest) dispatch({ type: 'track', name: 'guest_asset_view' }) }, [guest, dispatch])
   const [range, setRange] = useState('30d')
   const price = prices[id]
   const { data, change, range: r } = useSeries(id, range, price)
@@ -31,12 +34,14 @@ export default function AssetPanel({ id, nav }) {
 
   return (
     <Panel title={asset.name} onClose={nav.close}
-      footer={
+      footer={guest ? (
+        <Button onClick={() => nav.open('signupPrompt', { what: `купить ${asset.name}` })}>Купить {asset.symbol}</Button>
+      ) : (
         <div className="grid grid-cols-2 gap-2">
           <Button onClick={() => nav.open('trade', { asset: id, mode: 'buy' })}>Купить</Button>
           <Button variant="ghost" disabled={held * price < 500} onClick={() => nav.open('trade', { asset: id, mode: 'sell' })}>Продать</Button>
         </div>
-      }>
+      )}>
       <div className="flex flex-col gap-4">
         <header className="px-1">
           <div className="flex items-center gap-3">
@@ -56,14 +61,14 @@ export default function AssetPanel({ id, nav }) {
 
         <PriceChart data={data} color={asset.color} unit={`1 ${asset.kind === 'stock' ? 'шт' : asset.symbol}`} range={range} onRange={setRange} />
 
-        <Card>
+        {!guest && <Card>
           <Label>У вас</Label>
           <div className="flex items-baseline justify-between mt-1 gap-3">
             <span className="font-display font-semibold text-[18px] num">{qtyExact(asset, held)}</span>
             <span className="num text-[15px]">≈ {kzt(held * price)}</span>
           </div>
           {avg && <div className="text-[12px] text-mute mt-1 num">Средняя цена покупки: {kzt(avg)}</div>}
-        </Card>
+        </Card>}
 
         <Card>
           <div className="flex items-center gap-2 mb-1">

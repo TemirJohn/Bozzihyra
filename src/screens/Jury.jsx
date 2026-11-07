@@ -26,6 +26,8 @@ export default function Jury({ nav }) {
     ['Котировка истекла', e.quote_expired || 0],
     ['Ошибки', errors],
     ['Вопросы помощнику', e.assistant_question || 0],
+    ['Гостевые входы', e.guest_open || 0],
+    ['Гость → открыл счёт', e.guest_signup || 0],
     ['Сегмент', goal?.segment || '—'],
   ]
   return (

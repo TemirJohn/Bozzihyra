@@ -31,6 +31,7 @@ export const DEFAULT_SETTINGS = {
 
 const initial = {
   onboarded: false,
+  guest: false,
   goal: null,
   user: { name: 'Айгерим', phone: '+7 701 555 12 34' },
   balances: { kzt: 0, gold: 0, btc: 0, eth: 0, nvda: 0, aapl: 0, tsla: 0 },
@@ -115,9 +116,11 @@ function reducer(s, a) {
     }
     case 'track':
       return { ...s, events: bump(s.events, a.name) }
+    case 'guest':
+      return { ...s, guest: a.value, events: a.value ? bump(s.events, 'guest_open') : s.events }
     case 'onboard':
       return withNote({
-        ...s, onboarded: true, goal: a.goal, cashback: 'gold',
+        ...s, onboarded: true, guest: false, goal: a.goal, cashback: 'gold',
         events: bump(s.events, 'onboarding_done'),
       }, note('info', 'Добро пожаловать в Bozzihyra', 'Карта открыта. Кешбэк 1% будет приходить в золоте.'))
     case 'topup':
