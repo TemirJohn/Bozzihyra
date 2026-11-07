@@ -163,7 +163,7 @@ function GoldTab({ nav }) {
   return (
     <>
       <div className="rounded-[24px] bg-vault text-white p-5 relative overflow-hidden isolate">
-        <div className="absolute -right-3 -top-4 -z-10"><ToonGold model="stack" count={Math.max(2, Math.min(7, 2 + Math.round(Math.min(1, g / nextGram) * 5)))} size={124} sparkle label="Стопка золотых монет растёт вместе с балансом" /></div>
+        <div className="absolute right-1 top-0 -z-10"><ToonGold model="stack" count={Math.max(2, Math.min(7, 2 + Math.round(Math.min(1, g / nextGram) * 5)))} size={140} sparkle label="Стопка золотых монет растёт вместе с балансом" /></div>
         <div className="absolute inset-0 -z-10 bg-gradient-to-r from-vault via-vault/85 to-transparent" />
         <div className="text-[12px] text-white/65">Баланс золота · bzGOLD</div>
         <div className="font-display font-semibold text-[30px] leading-tight mt-1 num">{grams(g)}</div>

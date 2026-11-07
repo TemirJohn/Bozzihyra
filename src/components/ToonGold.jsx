@@ -8,6 +8,7 @@ import * as THREE from 'three'
 */
 
 const INK = 0x5b3a07       // цвет контура
+const BOUNCE = 0.08        // высота мультяшного подпрыгивания
 const GOLD = '#ffc83d'
 const GOLD_EDGE = '#f0a925'
 
@@ -86,21 +87,20 @@ function buildModel(model, count) {
     coin.rotation.x = Math.PI / 2 // монета стоит «лицом» к камере
     root.add(coin)
   } else if (model === 'stack') {
+    // Монеты лежат друг на друге с зазором, каждая чуть сдвинута и наклонена — «живая» небрежная стопка.
+    // Наклон маленький, а зазор больше подъёма края от наклона, поэтому монеты не входят друг в друга.
     const n = Math.max(1, Math.min(8, count))
+    const S = 0.82                        // масштаб монеты
+    const gap = 0.22 * S + 0.07           // толщина монеты + зазор под контур и наклон
+    const shift = [[0, 0], [0.08, -0.03], [-0.05, 0.06], [0.1, 0.04], [-0.07, -0.05], [0.04, 0.08], [-0.09, 0.02], [0.06, -0.07]]
+    const tilt = [[0.02, -0.03], [-0.03, 0.02], [0.03, 0.03], [-0.02, -0.03], [0.03, -0.02], [-0.03, 0.03], [0.02, 0.02], [-0.02, -0.02]]
     for (let i = 0; i < n; i++) {
       const coin = coinMesh(face)
-      coin.scale.setScalar(0.82)
-      coin.position.set(Math.sin(i * 2.1) * 0.06, -0.75 + i * 0.22, Math.cos(i * 1.7) * 0.06)
-      coin.rotation.y = i * 0.6
+      coin.scale.setScalar(S)
+      coin.position.set(shift[i][0], i * gap, shift[i][1])
+      coin.rotation.set(tilt[i][0], i * 0.9, tilt[i][1])
       root.add(coin)
     }
-    // Одна монетка прислонена к стопке, чтобы было живее
-    const lean = coinMesh(face)
-    lean.scale.setScalar(0.7)
-    lean.rotation.set(Math.PI / 2 - 0.35, 0, 0.15)
-    lean.position.set(0.95, -0.35, 0.35)
-    root.add(lean)
-    root.position.y = -(n * 0.22) / 2 + 0.75 - 0.35
   } else {
     // Самородок: икосаэдр с детерминированными «вмятинами», плоские грани
     const geo = new THREE.IcosahedronGeometry(1, 1)
@@ -146,16 +146,23 @@ function createStage(canvas, px, model, count, preserve = false) {
   sun.position.set(-2.5, 4, 3)
   scene.add(sun)
 
-  const camera = new THREE.PerspectiveCamera(32, 1, 0.1, 100)
-  if (model === 'stack') camera.position.set(0, 1.9, 4.6)
-  else if (model === 'coin') camera.position.set(0, 0.6, 4.4)
-  else camera.position.set(0, 1.4, 4.4)
-  camera.lookAt(0, 0, 0)
-
   const { root, dispose: disposeModel } = buildModel(model, count)
   const pivot = new THREE.Group()
   pivot.add(root)
   scene.add(pivot)
+
+  // Центрируем модель на оси вращения и ставим камеру так, чтобы описанная сфера целиком помещалась в кадр.
+  // Сфера не меняется при вращении, поэтому края не обрезаются ни при каком повороте и подпрыгивании.
+  const box = new THREE.Box3().setFromObject(root)
+  const sphere = box.getBoundingSphere(new THREE.Sphere())
+  root.position.sub(sphere.center)
+  const fov = 32
+  const camera = new THREE.PerspectiveCamera(fov, 1, 0.1, 100)
+  const radius = sphere.radius + BOUNCE
+  const dist = (radius / Math.sin(THREE.MathUtils.degToRad(fov / 2))) * 1.04
+  const elev = model === 'coin' ? 0.12 : model === 'stack' ? 0.38 : 0.3
+  camera.position.set(0, Math.sin(elev) * dist + BOUNCE / 2, Math.cos(elev) * dist)
+  camera.lookAt(0, BOUNCE / 2, 0)
 
   const dispose = () => { disposeModel(); renderer.dispose() }
   return { renderer, scene, camera, pivot, dispose }
@@ -222,7 +229,7 @@ export default function ToonGold({ model = 'coin', count = 4, size = 160, live =
       last = now
       if (!drag) { pivot.rotation.y += (speed + velocity) * dt; velocity *= 0.94 }
       // Мультяшное «подпрыгивание»
-      pivot.position.y = Math.abs(Math.sin(now / 520)) * 0.08
+      pivot.position.y = Math.abs(Math.sin(now / 520)) * BOUNCE
       if (model === 'nugget') pivot.rotation.x = Math.sin(now / 1400) * 0.12
       renderer.render(scene, camera)
       if (visible && !still) raf = requestAnimationFrame(frame)
